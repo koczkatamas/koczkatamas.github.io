@@ -51,55 +51,76 @@
 </nav>
 
 <div class="container">
-    <p>
-        <textarea id="ascii" placeholder="ASCII" class="form-control dataInput"></textarea>
-        <span class="label label-primary inputLabel">ASCII</span>
-    </p>
-    <p>
-        <textarea id="dec" placeholder="Decimal" class="form-control dataInput"></textarea>
-        <span class="label label-info inputLabel">DEC</span>
-    </p>
-    <p>
-        <textarea id="hex" placeholder="Hex" class="form-control dataInput"></textarea>
-        <span class="label label-danger inputLabel">HEX</span>
-    </p>
-    <p>
-        <textarea id="base64" placeholder="Base64" class="form-control dataInput"></textarea>
-        <span class="label label-success inputLabel">B64</span>
-    </p>
-    <p>
-        <textarea id="urlenc" placeholder="URL-encoded" class="form-control dataInput"></textarea>
-        <span class="label label-warning inputLabel">URL</span>
-    </p>
-    <p>
-        <textarea id="htmlenc" placeholder="HTML-encoded" class="form-control dataInput"></textarea>
-        <span class="label inputLabel" style="background-color:#f08d8e">HTML</span>
-    </p>
-    <p>
-        <textarea id="binary" placeholder="Binary" class="form-control dataInput"></textarea>
-        <span class="label inputLabel" style="background-color:#563d7c;">BIN</span>
-    </p>
-    <h3>Hash</h3>
-    <p>
-        <input type="text" id="md5" placeholder="MD5" class="form-control dataInput" />
-        <span class="label label-primary inputLabel">MD5</span>
-    </p>
-    <p>
-        <input type="text" id="sha1" placeholder="SHA1" class="form-control dataInput" />
-        <span class="label label-danger inputLabel">SHA1</span>
-    </p>
-    <p>
-        <input type="text" id="sha256" placeholder="SHA256" class="form-control dataInput" />
-        <span class="label label-success inputLabel">SHA256</span>
-    </p>
-    <p>
-        <input type="text" id="sha512" placeholder="SHA512" class="form-control dataInput" />
-        <span class="label inputLabel" style="background-color:#563d7c;">SHA512</span>
-    </p>
-    <p>
-        <input type="text" id="sha3" placeholder="SHA3" class="form-control dataInput" />
-        <span class="label label-warning inputLabel">SHA3</span>
-    </p>
+    <ul id="mainTabs" class="nav nav-pills" role="tablist" style="margin-bottom: 15px">
+        <li role="presentation" class="active"><a href="#panelConversion" id="tabConversion" role="tab" data-toggle="tab" aria-controls="panelConversion" aria-expanded="true">Conversion</a></li>
+        <li role="presentation" class=""><a href="#panelRSA" id="tabRSA" role="tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">RSA</a></li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+        <div role="tabpanel" class="tab-pane fade active in" id="panelConversion" aria-labelledby="tabConversion">
+            <button type="button" class="btn btn-default btn-sm toggleBtn active" data-toggle="collapse" data-target="#conversionArea" style="margin-bottom: 15px">General</button>
+            <button type="button" class="btn btn-default btn-sm toggleBtn active" data-toggle="collapse" data-target="#hashArea" style="margin-bottom: 15px">Hash</button>
+
+            <p>
+                <textarea id="ascii" placeholder="ASCII" class="form-control dataInput"></textarea>
+                <span class="label label-primary inputLabel">ASCII</span>
+            </p>
+
+            <div id="conversionArea" class="in">
+                <p>
+                    <textarea id="dec" placeholder="Decimal" class="form-control dataInput"></textarea>
+                    <span class="label label-info inputLabel">DEC</span>
+                </p>
+                <p>
+                    <textarea id="hex" placeholder="Hex" class="form-control dataInput"></textarea>
+                    <span class="label label-danger inputLabel">HEX</span>
+                </p>
+                <p>
+                    <textarea id="base64" placeholder="Base64" class="form-control dataInput"></textarea>
+                    <span class="label label-success inputLabel">B64</span>
+                </p>
+                <p>
+                    <textarea id="urlenc" placeholder="URL-encoded" class="form-control dataInput"></textarea>
+                    <span class="label label-warning inputLabel">URL</span>
+                </p>
+                <p>
+                    <textarea id="htmlenc" placeholder="HTML-encoded" class="form-control dataInput"></textarea>
+                    <span class="label inputLabel" style="background-color:#f08d8e">HTML</span>
+                </p>
+                <p>
+                    <textarea id="binary" placeholder="Binary" class="form-control dataInput"></textarea>
+                    <span class="label inputLabel" style="background-color:#563d7c;">BIN</span>
+                </p>
+            </div>
+
+            <div id="hashArea" class="in">
+                <h3>Hash</h3>
+                <p>
+                    <input type="text" id="md5" placeholder="MD5" class="form-control dataInput" />
+                    <span class="label label-primary inputLabel">MD5</span>
+                </p>
+                <p>
+                    <input type="text" id="sha1" placeholder="SHA1" class="form-control dataInput" />
+                    <span class="label label-danger inputLabel">SHA1</span>
+                </p>
+                <p>
+                    <input type="text" id="sha256" placeholder="SHA256" class="form-control dataInput" />
+                    <span class="label label-success inputLabel">SHA256</span>
+                </p>
+                <p>
+                    <input type="text" id="sha512" placeholder="SHA512" class="form-control dataInput" />
+                    <span class="label inputLabel" style="background-color:#563d7c;">SHA512</span>
+                </p>
+                <p>
+                    <input type="text" id="sha3" placeholder="SHA3" class="form-control dataInput" />
+                    <span class="label label-warning inputLabel">SHA3</span>
+                </p>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="panelRSA" aria-labelledby="tabRSA">
+            <p>Coming soon...</p>
+        </div>
+    </div>
+
 </div>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -196,6 +217,13 @@
     }
 
     $(function(){
+        $(".toggleBtn").click(function(){ $(this).button('toggle'); });
+
+//        $('#mainTabs a').click(function (e) {
+//            e.preventDefault()
+//            $(this).tab('show')
+//        })
+
         var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'),
                 urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary');
 
