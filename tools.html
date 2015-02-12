@@ -72,6 +72,10 @@
         <span class="label label-warning inputLabel">URL</span>
     </p>
     <p>
+        <textarea id="htmlenc" placeholder="HTML-encoded" class="form-control dataInput"></textarea>
+        <span class="label inputLabel" style="background-color:#f08d8e">HTML</span>
+    </p>
+    <p>
         <textarea id="binary" placeholder="Binary" class="form-control dataInput"></textarea>
         <span class="label inputLabel" style="background-color:#563d7c;">BIN</span>
     </p>
@@ -183,9 +187,17 @@
         return String(padPattern + str).slice(-padPattern.length);
     }
 
+    function htmlEncode(value){
+        return $('<div/>').text(value).html();
+    }
+
+    function htmlDecode(value){
+        return $('<div/>').html(value).text();
+    }
+
     $(function(){
         var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'),
-                urlenc = $('#urlenc'), binary = $('#binary');
+                urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary');
 
         function refreshAll(bytes, except){
             var str = bytesToStr(bytes);
@@ -194,6 +206,7 @@
             if(except != hex) hex.val(hexEncode(bytes, ' '));
             if(except != base64) base64.val(base64encode(bytes));
             if(except != urlenc) urlenc.val(encodeURIComponent(str));
+            if(except != htmlenc) htmlenc.val(htmlEncode(str));
             if(except != binary) binary.val(bytesToBinary(bytes));
 
             $('#md5').val(CryptoJS.MD5(str));
@@ -234,6 +247,7 @@
         inputByteHandle(hex, hexDecode);
         inputByteHandle(base64, base64decode);
         inputByteHandle(urlenc, function(x){ return strToBytes(decodeURIComponent(x)); });
+        inputByteHandle(htmlenc, function(x){ return strToBytes(htmlDecode(x)); });
         inputByteHandle(binary, binaryToBytes);
     });
 </script>
