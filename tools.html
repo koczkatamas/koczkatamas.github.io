@@ -57,9 +57,12 @@
     </ul>
     <div id="myTabContent" class="tab-content">
         <div role="tabpanel" class="tab-pane fade active in" id="panelConversion" aria-labelledby="tabConversion">
-            <button type="button" class="btn btn-default btn-sm toggleBtn active" data-toggle="collapse" data-target="#conversionArea" style="margin-bottom: 15px">General</button>
-            <button type="button" class="btn btn-default btn-sm toggleBtn active" data-toggle="collapse" data-target="#hashArea" style="margin-bottom: 15px">Hash</button>
-
+            <div id="showButtons" class="btn-group" data-toggle="buttons" style="margin-bottom: 15px">
+                <label id="showGeneral" class="btn btn-default btn-sm active" data-toggle="collapse" data-target="#conversionArea"><input type="checkbox" autocomplete="off" checked>General</label>
+                <label id="showHash" class="btn btn-default btn-sm active" data-toggle="collapse" data-target="#hashArea"><input type="checkbox" autocomplete="off" checked>Hash</label>
+                <label id="showMisc" class="btn btn-default btn-sm active" data-toggle="collapse" data-target="#miscArea"><input type="checkbox" autocomplete="off" checked>Misc</label>
+                <label id="showRot" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#rotArea"><input type="checkbox" autocomplete="off" checked>ROT</label>
+            </div>
             <p>
                 <textarea id="ascii" placeholder="ASCII" class="form-control dataInput"></textarea>
                 <span class="label label-primary inputLabel">ASCII</span>
@@ -114,6 +117,18 @@
                     <input type="text" id="sha3" placeholder="SHA3" class="form-control dataInput" />
                     <span class="label label-warning inputLabel">SHA3</span>
                 </p>
+            </div>
+
+            <div id="miscArea" class="in">
+                <h3>Misc</h3>
+                <p>
+                    <input type="text" id="rev" placeholder="Reverse" class="form-control dataInput" />
+                    <span class="label label-primary inputLabel">REV</span>
+                </p>
+            </div>
+
+            <div id="rotArea" class="collapse">
+                <h3>ROT</h3>
             </div>
         </div>
         <div role="tabpanel" class="tab-pane fade" id="panelRSA" aria-labelledby="tabRSA">
@@ -216,33 +231,111 @@
         return $('<div/>').html(value).text();
     }
 
-    $(function(){
-        $(".toggleBtn").click(function(){ $(this).button('toggle'); });
+    function reverse(str){
+        return str.split("").reverse().join("");
+    }
 
-//        $('#mainTabs a').click(function (e) {
-//            e.preventDefault()
-//            $(this).tab('show')
-//        })
+    function rotMod(c, n, base){
+        var val = c - base + n;
+        if(val < 0) val += 26;
+        if(val > 25) val -= 26;
+        return base + val;
+    }
+
+    function rot(str, n){
+        var result = '';
+        for(var i = 0; i < str.length; i++){
+            var c = str.charCodeAt(i);
+            if(97 <= c && c <= 122)
+                c = rotMod(c, n, 97);
+            else if(65 <= c && c <= 90)
+                c = rotMod(c, n, 65);
+            result += String.fromCharCode(c);
+        }
+        return result;
+    }
+
+    $(function(){
+        for(var i = 1; i <= 25; i++)
+            $('#rotArea').append('<p>\
+                <input type="text" id="rot'+i+'" placeholder="ROT-'+i+'" class="form-control dataInput" />\
+                <span class="label label-'+(i==13 ? 'danger' : 'primary')+' inputLabel">ROT'+i+'</span>\
+            </p>');
 
         var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'),
-                urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary');
+            urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'),
+            md5 = $('#md5'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
+            showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc');
 
-        function refreshAll(bytes, except){
-            var str = bytesToStr(bytes);
-            if(except != ascii) ascii.val(str);
-            if(except != dec) dec.val(join(bytes, ' '));
-            if(except != hex) hex.val(hexEncode(bytes, ' '));
-            if(except != base64) base64.val(base64encode(bytes));
-            if(except != urlenc) urlenc.val(encodeURIComponent(str));
-            if(except != htmlenc) htmlenc.val(htmlEncode(str));
-            if(except != binary) binary.val(bytesToBinary(bytes));
+        var showButtons = Array(showRot, showHash, showGeneral, showMisc);
 
-            $('#md5').val(CryptoJS.MD5(str));
-            $('#sha1').val(CryptoJS.SHA1(str));
-            $('#sha256').val(CryptoJS.SHA256(str));
-            $('#sha512').val(CryptoJS.SHA512(str));
-            $('#sha3').val(CryptoJS.SHA3(str));
+        var rotInputs = Array();
+        for(var i = 1; i <= 25; i++)
+            rotInputs[i] = $('#rot' + i);
+
+        $("#showButtons label").click(function(e){ setTimeout(function(){
+            localStorage.setItem($(e.target).attr('id') + '.active', $(e.target).hasClass('active'));
+            refreshToLast();
+        }, 0); });
+
+        for(var i = 0; i < showButtons.length; i++){
+            var isActive = localStorage.getItem(showButtons[i].attr('id') + '.active');
+            if(isActive === null) return;
+            isActive = isActive === "true";
+
+            showButtons[i].toggleClass('active', isActive);
+            $(showButtons[i].attr('data-target')).toggleClass('in', isActive).toggleClass('collapse', !isActive);
         }
+
+        var lastStr = '', lastExcept;
+
+        function refreshAll(bytesOrStr, except, force){
+            var start = new Date().getTime();
+
+            var isStr = $.type(bytesOrStr) === "string";
+            var str = isStr ? bytesOrStr : bytesToStr(bytesOrStr);
+            var bytes = !isStr ? bytesOrStr : strToBytes(bytesOrStr);
+
+            if(str == lastStr && !force)
+                return;
+
+            lastStr = str;
+            lastExcept = except;
+
+            if(except != ascii) ascii.val(str);
+
+            if(showGeneral.hasClass('active')){
+                if(except != dec) dec.val(join(bytes, ' '));
+                if(except != hex) hex.val(hexEncode(bytes, ' '));
+                if(except != base64) base64.val(base64encode(bytes));
+                if(except != urlenc) urlenc.val(encodeURIComponent(str));
+                if(except != htmlenc) htmlenc.val(htmlEncode(str));
+                if(except != binary) binary.val(bytesToBinary(bytes));
+            }
+
+            if(showMisc.hasClass('active')) {
+                if (except != rev) rev.val(reverse(str));
+            }
+
+            if(showRot.hasClass('active'))
+                for(var i = 1; i <= 25; i++)
+                    if(except != rotInputs[i])
+                        rotInputs[i].val(rot(str,i));
+
+            if(showHash.hasClass('active')){
+                md5.val(CryptoJS.MD5(str));
+                sha1.val(CryptoJS.SHA1(str));
+                sha256.val(CryptoJS.SHA256(str));
+                sha512.val(CryptoJS.SHA512(str));
+                sha3.val(CryptoJS.SHA3(str));
+            }
+
+            console.log('refreshAll: ' + (new Date().getTime() - start) + 'ms -> ' + str);
+        }
+
+        function refreshToLast(){ refreshAll(lastStr, lastExcept, true); }
+
+        refreshToLast();
 
         function keyEventSignup(item, func){
             item.keypress(func);
@@ -274,9 +367,12 @@
         inputByteHandle(dec, function(x){ return /[0-9]+/g.matches(x).map(function(x){ return parseInt(x); }); });
         inputByteHandle(hex, hexDecode);
         inputByteHandle(base64, base64decode);
-        inputByteHandle(urlenc, function(x){ return strToBytes(decodeURIComponent(x)); });
-        inputByteHandle(htmlenc, function(x){ return strToBytes(htmlDecode(x)); });
+        inputByteHandle(urlenc, decodeURIComponent);
+        inputByteHandle(htmlenc, htmlDecode);
         inputByteHandle(binary, binaryToBytes);
+        inputByteHandle(rev, reverse);
+        for(var i = 1; i <= 25; i++)
+            inputByteHandle(rotInputs[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
     });
 </script>
 </body>
