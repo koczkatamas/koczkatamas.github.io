@@ -70,37 +70,37 @@
             <button id="download" class="btn btn-success btn3d btn-sm pull-right">Download</button>
             <button id="btnReverse" class="btn btn-default btn3d btn-sm pull-right" style="margin-right:10px">Reverse</button>
             <p>
-                <textarea id="ascii" placeholder="ASCII" class="form-control dataInput"></textarea>
+                <textarea id="inpAscii" placeholder="ASCII" class="form-control dataInput"></textarea>
                 <span class="label label-primary inputLabel">ASCII</span>
             </p>
 
             <div id="conversionArea" class="in">
                 <p>
-                    <textarea id="dec" placeholder="Decimal" class="form-control dataInput"></textarea>
+                    <textarea id="inpDec" placeholder="Decimal" class="form-control dataInput"></textarea>
                     <span class="label label-info inputLabel">DEC</span>
                 </p>
                 <p>
-                    <textarea id="hex" placeholder="Hex" class="form-control dataInput"></textarea>
+                    <textarea id="inpHex" placeholder="Hex" class="form-control dataInput"></textarea>
                     <span class="label label-danger inputLabel">HEX</span>
                 </p>
                 <p>
-                    <textarea id="base64" placeholder="Base64" class="form-control dataInput"></textarea>
+                    <textarea id="inpBase64" placeholder="Base64" class="form-control dataInput"></textarea>
                     <span class="label label-success inputLabel">B64</span>
                 </p>
                 <p>
-                    <textarea id="urlenc" placeholder="URL-encoded" class="form-control dataInput"></textarea>
+                    <textarea id="inpUrlEnc" placeholder="URL-encoded" class="form-control dataInput"></textarea>
                     <span class="label label-warning inputLabel">URL</span>
                 </p>
                 <p>
-                    <textarea id="htmlenc" placeholder="HTML-encoded" class="form-control dataInput"></textarea>
+                    <textarea id="inpHtmlEnc" placeholder="HTML-encoded" class="form-control dataInput"></textarea>
                     <span class="label inputLabel" style="background-color:#f08d8e">HTML</span>
                 </p>
                 <p>
-                    <textarea id="binary" placeholder="Binary" class="form-control dataInput"></textarea>
+                    <textarea id="inpBinary" placeholder="Binary" class="form-control dataInput"></textarea>
                     <span class="label inputLabel" style="background-color:#563d7c;">BIN</span>
                 </p>
                 <p>
-                    <textarea id="integer" placeholder="Integer" class="form-control dataInput"></textarea>
+                    <textarea id="inpInteger" placeholder="Integer" class="form-control dataInput"></textarea>
                     <span class="label inputLabel" style="background-color:maroon;">INT</span>
                 </p>
             </div>
@@ -132,11 +132,11 @@
             <div id="miscArea" class="in">
                 <h3>Misc</h3>
                 <p>
-                    <textarea type="text" id="rev" placeholder="Reverse" class="form-control dataInput"></textarea>
+                    <textarea type="text" id="inpReverse" placeholder="Reverse" class="form-control dataInput"></textarea>
                     <span class="label label-warning inputLabel">REV</span>
                 </p>
                 <p>
-                    <textarea type="text" id="morse" placeholder="Morse" class="form-control dataInput"></textarea>
+                    <textarea type="text" id="inpMorse" placeholder="Morse" class="form-control dataInput"></textarea>
                     <span class="label label-success inputLabel">MRZ</span>
                 </p>
             </div>
@@ -354,16 +354,16 @@
                 <span class="label label-'+(i==13 ? 'danger' : 'primary')+' inputLabel">ROT'+i+'</span>\
             </p>');
 
-        var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'), urlenc = $('#urlenc'),
-            htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'), morse = $('#morse'), integer = $('#integer'),
+        var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpUrlEnc = $('#inpUrlEnc'),
+            inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
             md5 = $('#md5'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
             showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc');
 
         var showButtons = Array(showRot, showHash, showGeneral, showMisc);
 
-        var rotInputs = Array();
+        var inpRots = Array();
         for(var i = 1; i <= 25; i++)
-            rotInputs[i] = $('#rot' + i);
+            inpRots[i] = $('#rot' + i);
 
         $('#download').click(function(){
             var a = document.createElement("a");
@@ -381,9 +381,9 @@
             refreshAll(reverse(lastStr));
         });
 
-        function morseStyle(){ morse.toggleClass('morseContent', morse.val() != ''); }
+        function morseStyle(){ inpMorse.toggleClass('morseContent', inpMorse.val() != ''); }
 
-        keyEventSignup(morse, morseStyle);
+        keyEventSignup(inpMorse, morseStyle);
 
         $("#showButtons label").click(function(e){ setTimeout(function(){
             localStorage.setItem($(e.target).attr('id') + '.active', $(e.target).hasClass('active'));
@@ -420,31 +420,31 @@
             lastStr = str;
             lastExcept = except;
 
-            if(except != ascii) ascii.val(str);
+            if(except != inpAscii) inpAscii.val(str);
 
             if(history.replaceState)
                 history.replaceState(null, null, '#conv/' + encodeURIComponent(str));
 
             if(showGeneral.hasClass('active')){
-                if(except != dec) dec.val(join(bytes, ' '));
-                if(except != hex) hex.val(hexEncode(bytes, ' '));
-                if(except != base64) base64.val(base64encode(bytes));
-                if(except != urlenc) urlenc.val(encodeURIComponent(str));
-                if(except != htmlenc) htmlenc.val(htmlEncode(str));
-                if(except != binary) binary.val(bytesToBinary(bytes));
-                if(except != integer) integer.val(bytesToIntStr(bytes));
+                if(except != inpDec) inpDec.val(join(bytes, ' '));
+                if(except != inpHex) inpHex.val(hexEncode(bytes, ' '));
+                if(except != inpBase64) inpBase64.val(base64encode(bytes));
+                if(except != inpUrlEnc) inpUrlEnc.val(encodeURIComponent(str));
+                if(except != inpHtmlEnc) inpHtmlEnc.val(htmlEncode(str));
+                if(except != inpBinary) inpBinary.val(bytesToBinary(bytes));
+                if(except != inpInteger) inpInteger.val(bytesToIntStr(bytes));
             }
 
             if(showMisc.hasClass('active')) {
-                if (except != rev) rev.val(reverse(str));
-                if (except != morse) morse.val(morseEncode(str));
+                if (except != inpReverse) inpReverse.val(reverse(str));
+                if (except != inpMorse) inpMorse.val(morseEncode(str));
                 morseStyle();
             }
 
             if(showRot.hasClass('active'))
                 for(var i = 1; i <= 25; i++)
-                    if(except != rotInputs[i])
-                        rotInputs[i].val(rot(str,i));
+                    if(except != inpRots[i])
+                        inpRots[i].val(rot(str,i));
 
             if(showHash.hasClass('active')){
                 md5.val(CryptoJS.MD5(str));
@@ -487,18 +487,18 @@
             });
         }
 
-        inputByteHandle(ascii, strToBytes);
-        inputByteHandle(dec, function(x){ return /[0-9]+/g.matches(x).map(function(x){ return parseInt(x); }); });
-        inputByteHandle(hex, hexDecode);
-        inputByteHandle(base64, base64decode);
-        inputByteHandle(urlenc, decodeURIComponent);
-        inputByteHandle(htmlenc, htmlDecode);
-        inputByteHandle(binary, binaryToBytes);
-        inputByteHandle(rev, reverse);
-        inputByteHandle(morse, morseDecode);
-        inputByteHandle(integer, intStrToBytes);
+        inputByteHandle(inpAscii, strToBytes);
+        inputByteHandle(inpDec, function(x){ return /[0-9]+/g.matches(x).map(function(x){ return parseInt(x); }); });
+        inputByteHandle(inpHex, hexDecode);
+        inputByteHandle(inpBase64, base64decode);
+        inputByteHandle(inpUrlEnc, decodeURIComponent);
+        inputByteHandle(inpHtmlEnc, htmlDecode);
+        inputByteHandle(inpBinary, binaryToBytes);
+        inputByteHandle(inpReverse, reverse);
+        inputByteHandle(inpMorse, morseDecode);
+        inputByteHandle(inpInteger, intStrToBytes);
         for(var i = 1; i <= 25; i++)
-            inputByteHandle(rotInputs[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
+            inputByteHandle(inpRots[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
     });
 </script>
 </body>
