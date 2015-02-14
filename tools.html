@@ -24,8 +24,10 @@
     <![endif]-->
 
     <style>
-        .inputLabel { float:right; position:relative; margin-top:-26px; left:-10px; height:18px; padding:2px 6px; line-height:14px }
-        .form-control.dataInput { padding-right:55px; height:34px }
+        .inputLabel { float:right; position:relative; margin-top:-26px; left:-8px; height:18px; padding:2px 6px; line-height:14px }
+        .input-sm + .inputLabel { margin-top:-24px }
+        #panelConversion textarea { height:34px }
+        #panelConversion textarea, #panelConversion input { padding-right:55px; }
         body { padding-top: 65px; }
     </style>
 </head>
@@ -258,7 +260,7 @@
     $(function(){
         for(var i = 1; i <= 25; i++)
             $('#rotArea').append('<p>\
-                <input type="text" id="rot'+i+'" placeholder="ROT-'+i+'" class="form-control dataInput" />\
+                <input type="text" id="rot'+i+'" placeholder="ROT-'+i+'" class="form-control input-sm" />\
                 <span class="label label-'+(i==13 ? 'danger' : 'primary')+' inputLabel">ROT'+i+'</span>\
             </p>');
 
