@@ -26,9 +26,9 @@
     <style>
         .inputLabel { float:right; position:relative; margin-top:-26px; left:-8px; height:18px; padding:2px 6px; line-height:14px }
         .input-sm + .inputLabel { margin-top:-24px }
-        #panelAscii textarea { height:34px }
+        #panelAscii textarea { height:34px; overflow:hidden }
         #panelAscii textarea, #panelAscii input { padding-right:55px; }
-        .morzeContent { font-weight: bold; font-size: 24px; line-height: 21px; }
+        .morseContent { font-weight: bold; font-size: 24px; line-height: 21px }
         body { padding-top: 65px; }
     </style>
 </head>
@@ -129,7 +129,7 @@
                     <span class="label label-warning inputLabel">REV</span>
                 </p>
                 <p>
-                    <textarea type="text" id="morze" placeholder="Morze" class="form-control dataInput"></textarea>
+                    <textarea type="text" id="morse" placeholder="Morse" class="form-control dataInput"></textarea>
                     <span class="label label-success inputLabel">MRZ</span>
                 </p>
             </div>
@@ -262,33 +262,33 @@
         return result;
     }
 
-    var morzeTable = {
-        a: '.-',
-        b: '-...',
-        c: '-.-.',
-        d: '-..',
-        e: '.',
-        f: '..-.',
-        g: '--.',
-        h: '....',
-        i: '..',
-        j: '.---',
-        k: '-.-',
-        l: '.-..',
-        m: '--',
-        n: '-.',
-        o: '---',
-        p: '.--.',
-        q: '--.-',
-        r: '.-.',
-        s: '...',
-        t: '-',
-        u: '..-',
-        v: '...-',
-        w: '.--',
-        x: '-..-',
-        y: '-.--',
-        z: '--..',
+    var morseTable = {
+        A: '.-',
+        B: '-...',
+        C: '-.-.',
+        D: '-..',
+        E: '.',
+        F: '..-.',
+        G: '--.',
+        H: '....',
+        I: '..',
+        J: '.---',
+        K: '-.-',
+        L: '.-..',
+        M: '--',
+        N: '-.',
+        O: '---',
+        P: '.--.',
+        Q: '--.-',
+        R: '.-.',
+        S: '...',
+        T: '-',
+        U: '..-',
+        V: '...-',
+        W: '.--',
+        X: '-..-',
+        Y: '-.--',
+        Z: '--..',
         0: '-----',
         1: '.----',
         2: '..---',
@@ -300,28 +300,30 @@
         8: '---..',
         9: '----.'
     };
-    var morzeTableRev = Array();
-    for(var morzeKey in morzeTable)
-        morzeTableRev[morzeTable[morzeKey]] = morzeKey;
+    var morseTableRev = Array();
+    for(var morseKey in morseTable)
+        morseTableRev[morseTable[morseKey]] = morseKey;
 
-    function morzeDecode(str){
+    function morseDecode(str){
         str = str.replace(/•/g, '.').replace(/−/g, '-').replace(/\*/g, '.').replace(/\+/g, '.').replace(/_/g, '-');
 
         var parts = str.split(' ');
         var result = '';
         for(var i = 0; i < parts.length; i++){
-            var value = morzeTableRev[parts[i]];
+            var value = morseTableRev[parts[i]];
             result += value ? value : parts[i];
         }
         return result;
     }
 
-    function morzeEncode(str){
+    function morseEncode(str){
+        str = str.toUpperCase();
+
         var result = '';
         for(var i = 0; i < str.length; i++){
             var c = str.charAt(i);
-            if(morzeTable[c])
-                c = morzeTable[c];
+            if(morseTable[c])
+                c = morseTable[c];
             result += (result == '' ? '' : ' ') + c;
         }
         return result.replace(/\./g, '•').replace(/-/g, '−');
@@ -335,7 +337,7 @@
             </p>');
 
         var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'),
-            urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'), morze = $('#morze'),
+            urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'), morse = $('#morse'),
             md5 = $('#md5'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
             showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc');
 
@@ -345,9 +347,9 @@
         for(var i = 1; i <= 25; i++)
             rotInputs[i] = $('#rot' + i);
 
-        function morzeStyle(){ morze.toggleClass('morzeContent', morze.val() != ''); }
+        function morseStyle(){ morse.toggleClass('morseContent', morse.val() != ''); }
 
-        keyEventSignup(morze, morzeStyle);
+        keyEventSignup(morse, morseStyle);
 
         $("#showButtons label").click(function(e){ setTimeout(function(){
             localStorage.setItem($(e.target).attr('id') + '.active', $(e.target).hasClass('active'));
@@ -391,8 +393,8 @@
 
             if(showMisc.hasClass('active')) {
                 if (except != rev) rev.val(reverse(str));
-                if (except != morze) morze.val(morzeEncode(str));
-                morzeStyle();
+                if (except != morse) morse.val(morseEncode(str));
+                morseStyle();
             }
 
             if(showRot.hasClass('active'))
@@ -449,7 +451,7 @@
         inputByteHandle(htmlenc, htmlDecode);
         inputByteHandle(binary, binaryToBytes);
         inputByteHandle(rev, reverse);
-        inputByteHandle(morze, morzeDecode);
+        inputByteHandle(morse, morseDecode);
         for(var i = 1; i <= 25; i++)
             inputByteHandle(rotInputs[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
     });
