@@ -26,8 +26,9 @@
     <style>
         .inputLabel { float:right; position:relative; margin-top:-26px; left:-8px; height:18px; padding:2px 6px; line-height:14px }
         .input-sm + .inputLabel { margin-top:-24px }
-        #panelConversion textarea { height:34px }
-        #panelConversion textarea, #panelConversion input { padding-right:55px; }
+        #panelAscii textarea { height:34px }
+        #panelAscii textarea, #panelAscii input { padding-right:55px; }
+        .morzeContent { font-weight: bold; font-size: 24px; line-height: 21px; }
         body { padding-top: 65px; }
     </style>
 </head>
@@ -54,11 +55,11 @@
 
 <div class="container">
     <ul id="mainTabs" class="nav nav-pills" role="tablist" style="margin-bottom: 15px">
-        <li role="presentation" class="active"><a href="#panelConversion" id="tabConversion" role="tab" data-toggle="tab" aria-controls="panelConversion" aria-expanded="true">Conversion</a></li>
+        <li role="presentation" class="active"><a href="#panelAscii" id="tabAscii" role="tab" data-toggle="tab" aria-controls="panelAscii" aria-expanded="true">ASCII</a></li>
         <li role="presentation" class=""><a href="#panelRSA" id="tabRSA" role="tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">RSA</a></li>
     </ul>
     <div id="myTabContent" class="tab-content">
-        <div role="tabpanel" class="tab-pane fade active in" id="panelConversion" aria-labelledby="tabConversion">
+        <div role="tabpanel" class="tab-pane fade active in" id="panelAscii" aria-labelledby="tabAscii">
             <div id="showButtons" class="btn-group" data-toggle="buttons" style="margin-bottom: 15px">
                 <label id="showGeneral" class="btn btn-default btn-sm active" data-toggle="collapse" data-target="#conversionArea"><input type="checkbox" autocomplete="off" checked>General</label>
                 <label id="showHash" class="btn btn-default btn-sm active" data-toggle="collapse" data-target="#hashArea"><input type="checkbox" autocomplete="off" checked>Hash</label>
@@ -124,8 +125,12 @@
             <div id="miscArea" class="in">
                 <h3>Misc</h3>
                 <p>
-                    <input type="text" id="rev" placeholder="Reverse" class="form-control dataInput" />
-                    <span class="label label-primary inputLabel">REV</span>
+                    <textarea type="text" id="rev" placeholder="Reverse" class="form-control dataInput"></textarea>
+                    <span class="label label-warning inputLabel">REV</span>
+                </p>
+                <p>
+                    <textarea type="text" id="morze" placeholder="Morze" class="form-control dataInput"></textarea>
+                    <span class="label label-success inputLabel">MRZ</span>
                 </p>
             </div>
 
@@ -257,6 +262,71 @@
         return result;
     }
 
+    var morzeTable = {
+        a: '.-',
+        b: '-...',
+        c: '-.-.',
+        d: '-..',
+        e: '.',
+        f: '..-.',
+        g: '--.',
+        h: '....',
+        i: '..',
+        j: '.---',
+        k: '-.-',
+        l: '.-..',
+        m: '--',
+        n: '-.',
+        o: '---',
+        p: '.--.',
+        q: '--.-',
+        r: '.-.',
+        s: '...',
+        t: '-',
+        u: '..-',
+        v: '...-',
+        w: '.--',
+        x: '-..-',
+        y: '-.--',
+        z: '--..',
+        0: '-----',
+        1: '.----',
+        2: '..---',
+        3: '...--',
+        4: '....-',
+        5: '.....',
+        6: '-....',
+        7: '--...',
+        8: '---..',
+        9: '----.'
+    };
+    var morzeTableRev = Array();
+    for(var morzeKey in morzeTable)
+        morzeTableRev[morzeTable[morzeKey]] = morzeKey;
+
+    function morzeDecode(str){
+        str = str.replace(/•/g, '.').replace(/−/g, '-').replace(/\*/g, '.');
+
+        var parts = str.split(' ');
+        var result = '';
+        for(var i = 0; i < parts.length; i++){
+            var value = morzeTableRev[parts[i]];
+            result += value ? value : parts[i];
+        }
+        return result;
+    }
+
+    function morzeEncode(str){
+        var result = '';
+        for(var i = 0; i < str.length; i++){
+            var c = str.charAt(i);
+            if(morzeTable[c])
+                c = morzeTable[c];
+            result += (result == '' ? '' : ' ') + c;
+        }
+        return result.replace(/\./g, '•').replace(/-/g, '−');
+    }
+
     $(function(){
         for(var i = 1; i <= 25; i++)
             $('#rotArea').append('<p>\
@@ -265,7 +335,7 @@
             </p>');
 
         var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'),
-            urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'),
+            urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'), morze = $('#morze'),
             md5 = $('#md5'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
             showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc');
 
@@ -274,6 +344,10 @@
         var rotInputs = Array();
         for(var i = 1; i <= 25; i++)
             rotInputs[i] = $('#rot' + i);
+
+        function morzeStyle(){ morze.toggleClass('morzeContent', morze.val() != ''); }
+
+        keyEventSignup(morze, morzeStyle);
 
         $("#showButtons label").click(function(e){ setTimeout(function(){
             localStorage.setItem($(e.target).attr('id') + '.active', $(e.target).hasClass('active'));
@@ -292,7 +366,7 @@
         var lastStr = '', lastExcept;
 
         function refreshAll(bytesOrStr, except, force){
-            var start = new Date().getTime();
+            //var start = new Date().getTime();
 
             var isStr = $.type(bytesOrStr) === "string";
             var str = isStr ? bytesOrStr : bytesToStr(bytesOrStr);
@@ -317,6 +391,8 @@
 
             if(showMisc.hasClass('active')) {
                 if (except != rev) rev.val(reverse(str));
+                if (except != morze) morze.val(morzeEncode(str));
+                morzeStyle();
             }
 
             if(showRot.hasClass('active'))
@@ -332,7 +408,7 @@
                 sha3.val(CryptoJS.SHA3(str));
             }
 
-            console.log('refreshAll: ' + (new Date().getTime() - start) + 'ms -> ' + str);
+            //console.log('refreshAll: ' + (new Date().getTime() - start) + 'ms -> ' + str);
         }
 
         function refreshToLast(){ refreshAll(lastStr, lastExcept, true); }
@@ -373,6 +449,7 @@
         inputByteHandle(htmlenc, htmlDecode);
         inputByteHandle(binary, binaryToBytes);
         inputByteHandle(rev, reverse);
+        inputByteHandle(morze, morzeDecode);
         for(var i = 1; i <= 25; i++)
             inputByteHandle(rotInputs[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
     });
