@@ -305,7 +305,7 @@
         morzeTableRev[morzeTable[morzeKey]] = morzeKey;
 
     function morzeDecode(str){
-        str = str.replace(/•/g, '.').replace(/−/g, '-').replace(/\*/g, '.');
+        str = str.replace(/•/g, '.').replace(/−/g, '-').replace(/\*/g, '.').replace(/\+/g, '.').replace(/_/g, '-');
 
         var parts = str.split(' ');
         var result = '';
