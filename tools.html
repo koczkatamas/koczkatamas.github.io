@@ -12,6 +12,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme-3d.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -66,6 +67,7 @@
                 <label id="showMisc" class="btn btn-default btn-sm active" data-toggle="collapse" data-target="#miscArea"><input type="checkbox" autocomplete="off" checked>Misc</label>
                 <label id="showRot" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#rotArea"><input type="checkbox" autocomplete="off" checked>ROT</label>
             </div>
+            <button id="download" class="btn btn-success btn3d btn-sm pull-right">Download</button>
             <p>
                 <textarea id="ascii" placeholder="ASCII" class="form-control dataInput"></textarea>
                 <span class="label label-primary inputLabel">ASCII</span>
@@ -346,6 +348,18 @@
         var rotInputs = Array();
         for(var i = 1; i <= 25; i++)
             rotInputs[i] = $('#rot' + i);
+
+        $('#download').click(function(){
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display:none";
+            var blob = new Blob([lastStr], {type: "octet/stream"});
+            var url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = 'data.txt';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
 
         function morseStyle(){ morse.toggleClass('morseContent', morse.val() != ''); }
 
