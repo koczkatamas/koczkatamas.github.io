@@ -384,7 +384,7 @@
         try {
             var navigationParts = location.hash.substr(1).split('/');
             if(navigationParts[0] == 'conv')
-                lastStr = base64decode(navigationParts[1]);
+                lastStr = decodeURIComponent(navigationParts[1]);
         } catch(err){ }
 
         function refreshAll(bytesOrStr, except, force){
@@ -402,15 +402,13 @@
 
             if(except != ascii) ascii.val(str);
 
-            var b64val = base64encode(bytes);
-
             if(history.replaceState)
-                history.replaceState(null, null, '#conv/' + b64val);
+                history.replaceState(null, null, '#conv/' + encodeURIComponent(str));
 
             if(showGeneral.hasClass('active')){
                 if(except != dec) dec.val(join(bytes, ' '));
                 if(except != hex) hex.val(hexEncode(bytes, ' '));
-                if(except != base64) base64.val(b64val);
+                if(except != base64) base64.val(base64encode(bytes));
                 if(except != urlenc) urlenc.val(encodeURIComponent(str));
                 if(except != htmlenc) htmlenc.val(htmlEncode(str));
                 if(except != binary) binary.val(bytesToBinary(bytes));
