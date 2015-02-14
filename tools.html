@@ -68,6 +68,7 @@
                 <label id="showRot" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#rotArea"><input type="checkbox" autocomplete="off" checked>ROT</label>
             </div>
             <button id="download" class="btn btn-success btn3d btn-sm pull-right">Download</button>
+            <button id="btnReverse" class="btn btn-default btn3d btn-sm pull-right" style="margin-right:10px">Reverse</button>
             <p>
                 <textarea id="ascii" placeholder="ASCII" class="form-control dataInput"></textarea>
                 <span class="label label-primary inputLabel">ASCII</span>
@@ -97,6 +98,10 @@
                 <p>
                     <textarea id="binary" placeholder="Binary" class="form-control dataInput"></textarea>
                     <span class="label inputLabel" style="background-color:#563d7c;">BIN</span>
+                </p>
+                <p>
+                    <textarea id="integer" placeholder="Integer" class="form-control dataInput"></textarea>
+                    <span class="label inputLabel" style="background-color:maroon;">INT</span>
                 </p>
             </div>
 
@@ -159,6 +164,8 @@
 <script src="js/cryptojs/components/sha256.js"></script>
 <script src="js/cryptojs/components/sha512.js"></script>
 <script src="js/cryptojs/components/sha3.js"></script>
+<script src="js/jsbn/jsbn.js"></script>
+<script src="js/jsbn/jsbn2.js"></script>
 
 <script>
     function strToBytes(str){
@@ -208,6 +215,8 @@
 
     function hexDecode(str){
         var filteredStr = str.toLowerCase().replace(/[^0-9a-f]/g, '');
+        if(filteredStr.length % 2 == 1)
+            filteredStr = '0' + filteredStr;
 
         var bytes = [];
         for(var i = 0; i < filteredStr.length; i += 2)
@@ -323,12 +332,19 @@
 
         var result = '';
         for(var i = 0; i < str.length; i++){
-            var c = str.charAt(i);
-            if(morseTable[c])
-                c = morseTable[c];
-            result += (result == '' ? '' : ' ') + c;
+            var c = morseTable[str.charAt(i)];
+            if(c)
+                result += (result == '' ? '' : ' ') + c;
         }
         return result.replace(/\./g, '•').replace(/-/g, '−');
+    }
+
+    function bytesToIntStr(bytes){
+        return new BigInteger(hexEncode(bytes),16).toString(10);
+    }
+
+    function intStrToBytes(intStr){
+        return hexDecode(new BigInteger(intStr, 10).toString(16));
     }
 
     $(function(){
@@ -338,8 +354,8 @@
                 <span class="label label-'+(i==13 ? 'danger' : 'primary')+' inputLabel">ROT'+i+'</span>\
             </p>');
 
-        var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'),
-            urlenc = $('#urlenc'), htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'), morse = $('#morse'),
+        var ascii = $('#ascii'), hex = $('#hex'), dec = $('#dec'), base64 = $('#base64'), urlenc = $('#urlenc'),
+            htmlenc = $('#htmlenc'), binary = $('#binary'), rev = $('#rev'), morse = $('#morse'), integer = $('#integer'),
             md5 = $('#md5'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
             showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc');
 
@@ -359,6 +375,10 @@
             a.download = 'data.txt';
             a.click();
             window.URL.revokeObjectURL(url);
+        });
+
+        $('#btnReverse').click(function(){
+            refreshAll(reverse(lastStr));
         });
 
         function morseStyle(){ morse.toggleClass('morseContent', morse.val() != ''); }
@@ -412,6 +432,7 @@
                 if(except != urlenc) urlenc.val(encodeURIComponent(str));
                 if(except != htmlenc) htmlenc.val(htmlEncode(str));
                 if(except != binary) binary.val(bytesToBinary(bytes));
+                if(except != integer) integer.val(bytesToIntStr(bytes));
             }
 
             if(showMisc.hasClass('active')) {
@@ -475,6 +496,7 @@
         inputByteHandle(binary, binaryToBytes);
         inputByteHandle(rev, reverse);
         inputByteHandle(morse, morseDecode);
+        inputByteHandle(integer, intStrToBytes);
         for(var i = 1; i <= 25; i++)
             inputByteHandle(rotInputs[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
     });
