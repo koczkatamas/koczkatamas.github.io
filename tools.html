@@ -280,7 +280,7 @@
 
         for(var i = 0; i < showButtons.length; i++){
             var isActive = localStorage.getItem(showButtons[i].attr('id') + '.active');
-            if(isActive === null) return;
+            if(isActive === null) continue;
             isActive = isActive === "true";
 
             showButtons[i].toggleClass('active', isActive);
