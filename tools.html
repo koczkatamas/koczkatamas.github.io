@@ -447,11 +447,12 @@
                         inpRots[i].val(rot(str,i));
 
             if(showHash.hasClass('active')){
-                md5.val(CryptoJS.MD5(str));
-                sha1.val(CryptoJS.SHA1(str));
-                sha256.val(CryptoJS.SHA256(str));
-                sha512.val(CryptoJS.SHA512(str));
-                sha3.val(CryptoJS.SHA3(str));
+                var wordArray = CryptoJS.enc.Latin1.parse(str);
+                md5.val(CryptoJS.MD5(wordArray));
+                sha1.val(CryptoJS.SHA1(wordArray));
+                sha256.val(CryptoJS.SHA256(wordArray));
+                sha512.val(CryptoJS.SHA512(wordArray));
+                sha3.val(CryptoJS.SHA3(wordArray));
             }
 
             //console.log('refreshAll: ' + (new Date().getTime() - start) + 'ms -> ' + str);
