@@ -112,6 +112,10 @@
                     <span class="label label-primary inputLabel">MD5</span>
                 </p>
                 <p>
+                    <input type="text" id="ripemd160" placeholder="RIPEMD160" class="form-control dataInput" />
+                    <span class="label label-danger inputLabel">RIPEMD160</span>
+                </p>
+                <p>
                     <input type="text" id="sha1" placeholder="SHA1" class="form-control dataInput" />
                     <span class="label label-danger inputLabel">SHA1</span>
                 </p>
@@ -164,6 +168,7 @@
 <script src="js/cryptojs/components/sha256.js"></script>
 <script src="js/cryptojs/components/sha512.js"></script>
 <script src="js/cryptojs/components/sha3.js"></script>
+<script src="js/cryptojs/components/ripemd160.js"></script>
 <script src="js/jsbn/jsbn.js"></script>
 <script src="js/jsbn/jsbn2.js"></script>
 
@@ -210,7 +215,7 @@
 
     function hexEncode(bytes, separator){
         separator = separator || '';
-        return join(bytes.map(function(x){ return padLeft(x.toString(16),'00'); }), separator);
+        return bytes.map(function(x){ return padLeft(x.toString(16),'00'); }).join(separator);
     }
 
     function hexDecode(str){
@@ -347,6 +352,70 @@
         return hexDecode(new BigInteger(intStr, 10).toString(16));
     }
 
+    var urldecode = decodeURIComponent;
+    var urlencode = encodeURIComponent;
+
+    String.prototype.repeat = function(count) {
+        if (count < 1) return '';
+        var result = '', pattern = this.valueOf();
+        while (count > 1) {
+            if (count & 1) result += pattern;
+            count >>= 1, pattern += pattern;
+        }
+        return result + pattern;
+    };
+
+    var hashInfos = {
+        md5:       { algo: CryptoJS.algo.MD5,       hashLen: 16, bitLenSize:  8, blockSize:  64, littleEndian: true  },
+        ripemd160: { algo: CryptoJS.algo.RIPEMD160, hashLen: 20, bitLenSize:  8, blockSize:  64, littleEndian: true  },
+        sha1:      { algo: CryptoJS.algo.SHA1,      hashLen: 20, bitLenSize:  8, blockSize:  64, littleEndian: false },
+        sha256:    { algo: CryptoJS.algo.SHA256,    hashLen: 32, bitLenSize:  8, blockSize:  64, littleEndian: false },
+        sha512:    { algo: CryptoJS.algo.SHA512,    hashLen: 64, bitLenSize: 16, blockSize: 128, littleEndian: false }
+    };
+
+    function endiannessSwitch(num){
+        return (num >>> 24) | ((num >>> 8) & 0xff00) | ((num & 0xff00) << 8) | (num << 24);
+    }
+
+    function lengthExtensionAttack(hashInfo, data, origSignHex, secretLen, appendText) {
+        // create hash
+        var hashAlgo = hashInfo.algo.create();
+
+        // restore state
+        var origSignWords = CryptoJS.enc.Latin1.parse(bytesToStr(hexDecode(origSignHex))).words;
+
+        if(hashInfo.littleEndian)
+            for(var i = 0; i < origSignWords.length; i++)
+                origSignWords[i] = endiannessSwitch(origSignWords[i]);
+
+        if(hashAlgo._hash.toX32) // 64-bit words
+            for(var i = 0; i < origSignWords.length / 2; i++)
+                hashAlgo._hash.words[i] = (CryptoJS.x64.Word.create(origSignWords[i * 2], origSignWords[i * 2 + 1]));
+        else
+            hashAlgo._hash.words = origSignWords;
+
+        // append new text
+        hashAlgo.update(appendText);
+
+        // calculate byte lengths for <secret> + <data> + <padding> + <bit len of data>
+        var byteLenWoPadding = secretLen + data.length + hashInfo.bitLenSize;
+        var fullByteSize = ((Math.floor(byteLenWoPadding / hashInfo.blockSize) + 1) * hashInfo.blockSize);
+        var paddingLen = fullByteSize - byteLenWoPadding;
+        hashAlgo._nDataBytes += fullByteSize;
+
+        // calculate new signature
+        var newSignatureHex = CryptoJS.enc.Hex.stringify(hashAlgo.finalize());
+
+        var bitLen = (data.length + secretLen) * 8;
+        var bitLenStr = bytesToStr(new Array(0, 0, 0, 0, bitLen >>> 24, bitLen >>> 16 & 0xff, bitLen >>> 8 & 0xff, bitLen & 0xff));
+        if(hashInfo.littleEndian)
+            bitLenStr = reverse(bitLenStr);
+
+        var newDataHex = hexEncode(strToBytes(data + '\x80' + '\x00'.repeat(paddingLen - 1 + (hashInfo.bitLenSize - 8)) + bitLenStr + appendText));
+
+        return { newDataHex: newDataHex, newSignatureHex: newSignatureHex };
+    }
+
     $(function(){
         for(var i = 1; i <= 25; i++)
             $('#rotArea').append('<p>\
@@ -356,7 +425,7 @@
 
         var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpUrlEnc = $('#inpUrlEnc'),
             inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
-            md5 = $('#md5'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
+            md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
             showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc');
 
         var showButtons = Array(showRot, showHash, showGeneral, showMisc);
@@ -404,7 +473,7 @@
         try {
             var navigationParts = location.hash.substr(1).split('/');
             if(navigationParts[0] == 'conv')
-                lastStr = decodeURIComponent(navigationParts[1]);
+                lastStr = urldecode(navigationParts[1]);
         } catch(err){ }
 
         function refreshAll(bytesOrStr, except, force){
@@ -423,13 +492,13 @@
             if(except != inpAscii) inpAscii.val(str);
 
             if(history.replaceState)
-                history.replaceState(null, null, '#conv/' + encodeURIComponent(str));
+                history.replaceState(null, null, '#conv/' + urlencode(str));
 
             if(showGeneral.hasClass('active')){
                 if(except != inpDec) inpDec.val(join(bytes, ' '));
                 if(except != inpHex) inpHex.val(hexEncode(bytes, ' '));
                 if(except != inpBase64) inpBase64.val(base64encode(bytes));
-                if(except != inpUrlEnc) inpUrlEnc.val(encodeURIComponent(str));
+                if(except != inpUrlEnc) inpUrlEnc.val(urlencode(str));
                 if(except != inpHtmlEnc) inpHtmlEnc.val(htmlEncode(str));
                 if(except != inpBinary) inpBinary.val(bytesToBinary(bytes));
                 if(except != inpInteger) inpInteger.val(bytesToIntStr(bytes));
@@ -449,6 +518,7 @@
             if(showHash.hasClass('active')){
                 var wordArray = CryptoJS.enc.Latin1.parse(str);
                 md5.val(CryptoJS.MD5(wordArray));
+                ripemd160.val(CryptoJS.RIPEMD160(wordArray));
                 sha1.val(CryptoJS.SHA1(wordArray));
                 sha256.val(CryptoJS.SHA256(wordArray));
                 sha512.val(CryptoJS.SHA512(wordArray));
@@ -492,7 +562,7 @@
         inputByteHandle(inpDec, function(x){ return /[0-9]+/g.matches(x).map(function(x){ return parseInt(x); }); });
         inputByteHandle(inpHex, hexDecode);
         inputByteHandle(inpBase64, base64decode);
-        inputByteHandle(inpUrlEnc, decodeURIComponent);
+        inputByteHandle(inpUrlEnc, urldecode);
         inputByteHandle(inpHtmlEnc, htmlDecode);
         inputByteHandle(inpBinary, binaryToBytes);
         inputByteHandle(inpReverse, reverse);
@@ -500,6 +570,12 @@
         inputByteHandle(inpInteger, intStrToBytes);
         for(var i = 1; i <= 25; i++)
             inputByteHandle(inpRots[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
+
+//        console.log('lengthExtensionAttack MD5', lengthExtensionAttack(hashInfos.md5, 'hello', '11e2d168019acd14ecdb5ec80a98bb38', 6, 'bello'));
+//        console.log('lengthExtensionAttack SHA1', lengthExtensionAttack(hashInfos.sha1, 'hello', 'a590ccecb687967079362e49b7fe6c5258d09be5', 6, 'bello'));
+//        console.log('lengthExtensionAttack SHA256', lengthExtensionAttack(hashInfos.sha256, 'hello', '1d4d234df92246e120bc62a10d8751882494a8a9bae09c494a519a783a128732', 6, 'bello'));
+//        console.log('lengthExtensionAttack SHA512', lengthExtensionAttack(hashInfos.sha512, 'hello', 'adee6c2ae315a8dedd04462b8ed40221f699f521d5c74feac968e6efb96513d9f6f9aa6ce4b52fec3bd3816340610fab8f182b57fd9bbd53a431dfc87fd6a5e7', 6, 'bello'));
+//        console.log('lengthExtensionAttack RIPEMD160', lengthExtensionAttack(hashInfos.ripemd160, 'hello', 'eeaf34a1c3687ea7082a38a6eb45c6ea19080251', 6, 'bello'));
     });
 </script>
 
