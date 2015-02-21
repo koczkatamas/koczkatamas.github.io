@@ -57,6 +57,7 @@
 <div class="container">
     <ul id="mainTabs" class="nav nav-pills" role="tablist" style="margin-bottom: 15px">
         <li role="presentation" class="active"><a href="#panelAscii" id="tabAscii" role="tab" data-toggle="tab" aria-controls="panelAscii" aria-expanded="true">ASCII</a></li>
+        <li role="presentation" class=""><a href="#panelHash" id="tabHash" role="tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">Hash</a></li>
         <li role="presentation" class=""><a href="#panelRSA" id="tabRSA" role="tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">RSA</a></li>
     </ul>
     <div id="myTabContent" class="tab-content">
@@ -148,6 +149,10 @@
             <div id="rotArea" class="collapse">
                 <h3>ROT</h3>
             </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade" id="panelHash" aria-labelledby="tabHash">
+            <h3>Length Extension Attack</h3>
+            <p>Coming soon...</p>
         </div>
         <div role="tabpanel" class="tab-pane fade" id="panelRSA" aria-labelledby="tabRSA">
             <p>Coming soon...</p>
@@ -416,6 +421,19 @@
         return { newDataHex: newDataHex, newSignatureHex: newSignatureHex };
     }
 
+    var lastStr = '', lastExcept;
+
+    try {
+        var navigationParts = location.hash.substr(1).split('/');
+        var pageName = navigationParts[0];
+        if(pageName == 'conv')
+            lastStr = urldecode(navigationParts[1] || "");
+        else if(pageName == 'hash')
+            $('#tabHash').tab('show');
+        else if(pageName == 'rsa')
+            $('#tabRSA').tab('show');
+    } catch(err){ }
+
     $(function(){
         for(var i = 1; i <= 25; i++)
             $('#rotArea').append('<p>\
@@ -450,6 +468,15 @@
             refreshAll(reverse(lastStr));
         });
 
+        $('#mainTabs a').on('shown.bs.tab', function (e) {
+            if(e.target.id == 'tabAscii')
+                window.location.hash = "conv";
+            else if(e.target.id == 'tabHash')
+                window.location.hash = "hash";
+            else if(e.target.id == 'tabRSA')
+                window.location.hash = "rsa";
+        });
+
         function morseStyle(){ inpMorse.toggleClass('morseContent', inpMorse.val() != ''); }
 
         keyEventSignup(inpMorse, morseStyle);
@@ -468,14 +495,6 @@
             $(showButtons[i].attr('data-target')).toggleClass('in', isActive).toggleClass('collapse', !isActive);
         }
 
-        var lastStr = '', lastExcept;
-
-        try {
-            var navigationParts = location.hash.substr(1).split('/');
-            if(navigationParts[0] == 'conv')
-                lastStr = urldecode(navigationParts[1]);
-        } catch(err){ }
-
         function refreshAll(bytesOrStr, except, force){
             //var start = new Date().getTime();
 
@@ -491,7 +510,7 @@
 
             if(except != inpAscii) inpAscii.val(str);
 
-            if(history.replaceState)
+            if(history.replaceState && $("#tabAscii").parent().hasClass('active'))
                 history.replaceState(null, null, '#conv/' + urlencode(str));
 
             if(showGeneral.hasClass('active')){
