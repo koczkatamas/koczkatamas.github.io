@@ -31,6 +31,7 @@
         #panelAscii textarea, #panelAscii input { padding-right:55px; }
         .morseContent { font-weight: bold; font-size: 24px; line-height: 21px }
         body { padding-top: 65px; }
+        input[readonly] { cursor: default !important; }
     </style>
 </head>
 <body>
@@ -109,27 +110,27 @@
             <div id="hashArea" class="in">
                 <h3>Hash</h3>
                 <p>
-                    <input type="text" id="md5" placeholder="MD5" class="form-control dataInput" />
+                    <input type="text" id="md5" placeholder="MD5" class="form-control dataInput" readonly />
                     <span class="label label-primary inputLabel">MD5</span>
                 </p>
                 <p>
-                    <input type="text" id="ripemd160" placeholder="RIPEMD160" class="form-control dataInput" />
+                    <input type="text" id="ripemd160" placeholder="RIPEMD160" class="form-control dataInput" readonly />
                     <span class="label label-danger inputLabel" style="background-color:#f08d8e">RIPEMD160</span>
                 </p>
                 <p>
-                    <input type="text" id="sha1" placeholder="SHA1" class="form-control dataInput" />
+                    <input type="text" id="sha1" placeholder="SHA1" class="form-control dataInput" readonly />
                     <span class="label label-danger inputLabel">SHA1</span>
                 </p>
                 <p>
-                    <input type="text" id="sha256" placeholder="SHA256" class="form-control dataInput" />
+                    <input type="text" id="sha256" placeholder="SHA256" class="form-control dataInput" readonly />
                     <span class="label label-success inputLabel">SHA256</span>
                 </p>
                 <p>
-                    <input type="text" id="sha512" placeholder="SHA512" class="form-control dataInput" />
+                    <input type="text" id="sha512" placeholder="SHA512" class="form-control dataInput" readonly />
                     <span class="label inputLabel" style="background-color:#563d7c;">SHA512</span>
                 </p>
                 <p>
-                    <input type="text" id="sha3" placeholder="SHA3" class="form-control dataInput" />
+                    <input type="text" id="sha3" placeholder="SHA3" class="form-control dataInput" readonly />
                     <span class="label label-warning inputLabel">SHA3</span>
                 </p>
             </div>
@@ -152,7 +153,51 @@
         </div>
         <div role="tabpanel" class="tab-pane fade" id="panelHash" aria-labelledby="tabHash">
             <h3>Length Extension Attack</h3>
-            <p>Coming soon...</p>
+            <br>
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="hashOrigData" class="col-sm-2 control-label">Original data</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="hashOrigData" placeholder="in raw format">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hashOrigSign" class="col-sm-2 control-label">Original signature</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="hashOrigSign" placeholder="in hex format">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hashSecretLen" class="col-sm-2 control-label">Secret length</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="hashSecretLen" placeholder="" min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hashAppendData" class="col-sm-2 control-label">Data to append</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="hashAppendData" placeholder="in raw format">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Detected algorithm</label>
+                    <div class="col-sm-10">
+                        <p id="txtHashAlgorithm" class="form-control-static" style="font-weight: bold">&nbsp;</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hashNewSignature" class="col-sm-2 control-label">New signature</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="hashNewSignature" placeholder="in hex format" readonly>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hashNewData" class="col-sm-2 control-label">New data</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" id="hashNewData" placeholder="in hex format" readonly></textarea>
+                    </div>
+                </div>
+            </form>
         </div>
         <div role="tabpanel" class="tab-pane fade" id="panelRSA" aria-labelledby="tabRSA">
             <p>Coming soon...</p>
@@ -444,7 +489,10 @@
         var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpUrlEnc = $('#inpUrlEnc'),
             inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
             md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
-            showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc');
+            showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc'),
+            inpHashOrigData = $('#hashOrigData'), inpHashOrigSign = $('#hashOrigSign'), inpHashSecretLen = $('#hashSecretLen'),
+            inpHashAppendData = $('#hashAppendData'), inpHashNewData = $('#hashNewData'), inpHashNewSignature = $('#hashNewSignature'),
+            txtHashAlgorithm = $('#txtHashAlgorithm');
 
         var showButtons = Array(showRot, showHash, showGeneral, showMisc);
 
@@ -465,7 +513,7 @@
         });
 
         $('#btnReverse').click(function(){
-            refreshAll(reverse(lastStr));
+            convRefreshAll(reverse(lastStr));
         });
 
         $('#mainTabs a').on('shown.bs.tab', function (e) {
@@ -483,7 +531,7 @@
 
         $("#showButtons label").click(function(e){ setTimeout(function(){
             localStorage.setItem($(e.target).attr('id') + '.active', $(e.target).hasClass('active'));
-            refreshToLast();
+            convRefreshToLast();
         }, 0); });
 
         for(var i = 0; i < showButtons.length; i++){
@@ -495,7 +543,7 @@
             $(showButtons[i].attr('data-target')).toggleClass('in', isActive).toggleClass('collapse', !isActive);
         }
 
-        function refreshAll(bytesOrStr, except, force){
+        function convRefreshAll(bytesOrStr, except, force){
             //var start = new Date().getTime();
 
             var isStr = $.type(bytesOrStr) === "string";
@@ -547,9 +595,9 @@
             //console.log('refreshAll: ' + (new Date().getTime() - start) + 'ms -> ' + str);
         }
 
-        function refreshToLast(){ refreshAll(lastStr, lastExcept, true); }
+        function convRefreshToLast(){ convRefreshAll(lastStr, lastExcept, true); }
 
-        refreshToLast();
+        convRefreshToLast();
 
         function keyEventSignup(item, func){
             item.keypress(func);
@@ -564,7 +612,7 @@
             return matches;
         }
 
-        function inputByteHandle(input, toByteConv){
+        function inputByteHandle(input, toByteConv, funcToCall){
             keyEventSignup(input, function(){
                 var inputVal = input.val();
                 try {
@@ -573,23 +621,48 @@
                 } catch(err) {
                     input.parent().addClass('has-error');
                 }
-                refreshAll(bytes, input);
+                funcToCall(bytes, input);
             });
         }
 
-        inputByteHandle(inpAscii, strToBytes);
-        inputByteHandle(inpDec, function(x){ return /[0-9]+/g.matches(x).map(function(x){ return parseInt(x); }); });
-        inputByteHandle(inpHex, hexDecode);
-        inputByteHandle(inpBase64, base64decode);
-        inputByteHandle(inpUrlEnc, urldecode);
-        inputByteHandle(inpHtmlEnc, htmlDecode);
-        inputByteHandle(inpBinary, binaryToBytes);
-        inputByteHandle(inpReverse, reverse);
-        inputByteHandle(inpMorse, morseDecode);
-        inputByteHandle(inpInteger, intStrToBytes);
-        for(var i = 1; i <= 25; i++)
-            inputByteHandle(inpRots[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
+        function convInputByteHandle(input, toByteConv){
+            inputByteHandle(input, toByteConv, convRefreshAll);
+        }
 
+        convInputByteHandle(inpAscii, strToBytes);
+        convInputByteHandle(inpDec, function(x){ return /[0-9]+/g.matches(x).map(function(x){ return parseInt(x); }); });
+        convInputByteHandle(inpHex, hexDecode);
+        convInputByteHandle(inpBase64, base64decode);
+        convInputByteHandle(inpUrlEnc, urldecode);
+        convInputByteHandle(inpHtmlEnc, htmlDecode);
+        convInputByteHandle(inpBinary, binaryToBytes);
+        convInputByteHandle(inpReverse, reverse);
+        convInputByteHandle(inpMorse, morseDecode);
+        convInputByteHandle(inpInteger, intStrToBytes);
+        for(var i = 1; i <= 25; i++)
+            convInputByteHandle(inpRots[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
+
+        function refreshHash(){
+            var origData = inpHashOrigData.val();
+            var origSign = inpHashOrigSign.val();
+            var secretLen = parseInt(inpHashSecretLen.val());
+            var appendData = inpHashAppendData.val();
+
+            var hashInfoName =
+                origSign.length == hashInfos.md5.hashLen * 2 ? 'md5' :
+                origSign.length == hashInfos.sha1.hashLen * 2 ? 'sha1' :
+                origSign.length == hashInfos.sha256.hashLen * 2 ? 'sha256' :
+                origSign.length == hashInfos.sha512.hashLen * 2 ? 'sha512' : null;
+
+            txtHashAlgorithm.text(hashInfoName ? hashInfoName.toUpperCase() : "Could not detect hash type!");
+
+            var result = hashInfoName ? lengthExtensionAttack(hashInfos[hashInfoName], origData, origSign, secretLen, appendData) : { newSignatureHex: "", newDataHex: "" };
+
+            inpHashNewSignature.val(result.newSignatureHex);
+            inpHashNewData.val(result.newDataHex);
+        }
+
+        new Array(inpHashOrigData, inpHashOrigSign, inpHashSecretLen, inpHashAppendData).forEach(function(x){ keyEventSignup(x, refreshHash); });
 //        console.log('lengthExtensionAttack MD5', lengthExtensionAttack(hashInfos.md5, 'hello', '11e2d168019acd14ecdb5ec80a98bb38', 6, 'bello'));
 //        console.log('lengthExtensionAttack SHA1', lengthExtensionAttack(hashInfos.sha1, 'hello', 'a590ccecb687967079362e49b7fe6c5258d09be5', 6, 'bello'));
 //        console.log('lengthExtensionAttack SHA256', lengthExtensionAttack(hashInfos.sha256, 'hello', '1d4d234df92246e120bc62a10d8751882494a8a9bae09c494a519a783a128732', 6, 'bello'));
