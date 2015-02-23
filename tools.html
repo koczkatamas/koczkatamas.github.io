@@ -470,7 +470,7 @@
         return { newDataHex: newDataHex, newSignatureHex: newSignatureHex };
     }
 
-    var lastStr = '', lastExcept;
+    var lastStr = '', lastBytes = Array(), lastExcept;
 
     try {
         var navigationParts = location.hash.substr(1).split('/');
@@ -508,7 +508,7 @@
             var a = document.createElement("a");
             document.body.appendChild(a);
             a.style = "display:none";
-            var blob = new Blob([lastStr], {type: "octet/stream"});
+            var blob = new Blob(lastBytes, {type: "octet/stream"});
             var url = window.URL.createObjectURL(blob);
             a.href = url;
             a.download = 'data.txt';
@@ -558,6 +558,7 @@
                 return;
 
             lastStr = str;
+            lastBytes = bytes;
             lastExcept = except;
 
             if(except != inpAscii) inpAscii.val(str);
