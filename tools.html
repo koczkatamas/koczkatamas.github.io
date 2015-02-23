@@ -508,7 +508,7 @@
             var a = document.createElement("a");
             document.body.appendChild(a);
             a.style = "display:none";
-            var blob = new Blob(lastBytes, {type: "octet/stream"});
+            var blob = new Blob([new Uint8Array(lastBytes)], {type: "octet/stream"});
             var url = window.URL.createObjectURL(blob);
             a.href = url;
             a.download = 'data.txt';
