@@ -349,6 +349,9 @@
         return bytes.map(function(x){ return padLeft(x.toString(16),'00'); }).join(separator);
     }
 
+    function strToHex(str, separator){ return bytesToHex(strToBytes(str), separator); }
+    function hexToStr(hexStr){ return bytesToStr(hexToBytes(hexStr)); }
+
     function hexToBytes(str){
         var filteredStr = str.toLowerCase().replace(/[^0-9a-f]/g, '');
         if(filteredStr.length % 2 == 1)
@@ -816,6 +819,10 @@
 
             formatInputSet(inpHashNewSignature, result.newSignature);
             formatInputSet(inpHashNewData, result.newData);
+
+            if(history.replaceState && $("#tabHash").parent().hasClass('active'))
+                history.replaceState(null, null, '#hash/' + urlencode(origData) + "/" + strToHex(origSign) +
+                    "/" + urlencode(secretLen || 0) + "/" + urlencode(appendData));
         }
 
         new Array(inpHashOrigData, inpHashOrigSign, inpHashSecretLen, inpHashAppendData).forEach(function(x){ keyEventSignup(x, refreshHash); });
@@ -825,6 +832,13 @@
             a.closest('.formatSelector').find('.selVal').text(a.text());
             refreshHash();
         });
+
+        if(pageName == 'hash'){
+            if(navigationParts.length > 1) inpHashOrigData.val(urldecode(navigationParts[1]));
+            if(navigationParts.length > 2) inpHashOrigSign.val(navigationParts[2]);
+            if(navigationParts.length > 3) inpHashSecretLen.val(urldecode(navigationParts[3]));
+            if(navigationParts.length > 4) inpHashAppendData.val(urldecode(navigationParts[4]));
+        }
 
         refreshHash();
 //        console.log('lengthExtensionAttack MD5', lengthExtensionAttack(hashInfos.md5, 'hello', '11e2d168019acd14ecdb5ec80a98bb38', 6, 'bello'));
