@@ -25,13 +25,21 @@
     <![endif]-->
 
     <style>
-        .inputLabel { float:right; position:relative; margin-top:-26px; left:-8px; height:18px; padding:2px 6px; line-height:14px }
+        .inputLabel { float:right; position:relative; margin-top:-26px; left:-8px; height:18px;
+            padding:2px 6px; line-height:14px; z-index:2 }
         .input-sm + .inputLabel { margin-top:-24px }
         #panelAscii textarea { height:34px; overflow:hidden }
         #panelAscii textarea, #panelAscii input { padding-right:55px; }
         .morseContent { font-weight: bold; font-size: 24px; line-height: 21px }
         body { padding-top: 65px; }
         input[readonly] { cursor: default !important; }
+        .formatSelector { }
+        .formatSelector .dropdown-menu { min-width: 64px; margin-top: -1px; }
+        .formatSelector .dropdown-menu>li>a { padding: 3px 16px; }
+        .formatSelector .dropdown-toggle { width: 65px; height: 100%; padding: 0 }
+        .formatSelector input { margin: 1px 0; }
+        .formatSelector .open .dropdown-menu { border-radius: 0 0 4px 4px; }
+        .formatSelector .open .dropdown-toggle { border-radius: 4px 0 0 0; }
     </style>
 </head>
 <body>
@@ -45,7 +53,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">kt.pe</a>
+            <a class="navbar-brand">kt.pe</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
@@ -162,25 +170,70 @@
                 <div class="form-group">
                     <label for="hashOrigData" class="col-sm-2 control-label">Original data</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="hashOrigData" placeholder="in raw format">
+                        <div class="input-group formatSelector">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary btn3d dropdown-toggle" data-toggle="dropdown">
+                                    <span class="selVal">auto</span>&nbsp;<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a>auto</a></li>
+                                    <li><a>ascii</a></li>
+                                    <li><a>hex</a></li>
+                                    <li><a>b64</a></li>
+                                    <li><a>dec</a></li>
+                                </ul>
+                            </div><!-- /btn-group -->
+                            <input type="text" class="form-control" id="hashOrigData" value="hello">
+                            <span class="label label-primary inputLabel">ASCII</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="hashOrigSign" class="col-sm-2 control-label">Original signature</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="hashOrigSign" placeholder="in hex format">
+                        <div class="input-group formatSelector">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary btn3d dropdown-toggle" data-toggle="dropdown">
+                                    <span class="selVal">auto</span>&nbsp;<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a>auto</a></li>
+                                    <li><a>ascii</a></li>
+                                    <li><a>hex</a></li>
+                                    <li><a>b64</a></li>
+                                    <li><a>dec</a></li>
+                                </ul>
+                            </div><!-- /btn-group -->
+                            <input type="text" class="form-control" id="hashOrigSign" value="11e2d168019acd14ecdb5ec80a98bb38">
+                            <span class="label label-primary inputLabel">ASCII</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="hashSecretLen" class="col-sm-2 control-label">Secret length</label>
-                    <div class="col-sm-10">
-                        <input type="number" class="form-control" id="hashSecretLen" placeholder="" min="0">
+                    <div class="col-sm-2">
+                        <input type="number" class="form-control" id="hashSecretLen" min="0" value="6">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="hashAppendData" class="col-sm-2 control-label">Data to append</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="hashAppendData" placeholder="in raw format">
+                        <div class="input-group formatSelector">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary btn3d dropdown-toggle" data-toggle="dropdown">
+                                    <span class="selVal">auto</span>&nbsp;<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a>auto</a></li>
+                                    <li><a>ascii</a></li>
+                                    <li><a>hex</a></li>
+                                    <li><a>b64</a></li>
+                                    <li><a>dec</a></li>
+                                </ul>
+                            </div><!-- /btn-group -->
+                            <input type="text" class="form-control" id="hashAppendData">
+                            <span class="label label-primary inputLabel">ASCII</span>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -192,13 +245,39 @@
                 <div class="form-group">
                     <label for="hashNewSignature" class="col-sm-2 control-label">New signature</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="hashNewSignature" placeholder="in hex format" readonly>
+                        <div class="input-group formatSelector">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary btn3d dropdown-toggle" data-toggle="dropdown">
+                                    <span class="selVal">hex</span>&nbsp;<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a>ascii</a></li>
+                                    <li><a>hex</a></li>
+                                    <li><a>b64</a></li>
+                                    <li><a>dec</a></li>
+                                </ul>
+                            </div><!-- /btn-group -->
+                            <input type="text" class="form-control" id="hashNewSignature" readonly>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="hashNewData" class="col-sm-2 control-label">New data</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="hashNewData" placeholder="in hex format" readonly></textarea>
+                        <div class="input-group formatSelector">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-primary btn3d dropdown-toggle" data-toggle="dropdown">
+                                    <span class="selVal">hex</span>&nbsp;<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a>ascii</a></li>
+                                    <li><a>hex</a></li>
+                                    <li><a>b64</a></li>
+                                    <li><a>dec</a></li>
+                                </ul>
+                            </div><!-- /btn-group -->
+                            <textarea class="form-control" id="hashNewData" readonly></textarea>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -259,20 +338,18 @@
         return str;
     }
 
-    function base64encode(bytes){
-        return btoa(bytesToStr(bytes))
-    }
+    function strToBase64(bytes){ return btoa(bytes); }
+    function bytesToBase64(bytes){ return strToBase64(bytesToStr(bytes)); }
 
-    function base64decode(str){
-        return strToBytes(atob(str))
-    }
+    function base64ToStr(base64str){ return atob(base64str); }
+    function base64ToBytes(str){ return strToBytes(base64ToStr(str)); }
 
-    function hexEncode(bytes, separator){
+    function bytesToHex(bytes, separator){
         separator = separator || '';
         return bytes.map(function(x){ return padLeft(x.toString(16),'00'); }).join(separator);
     }
 
-    function hexDecode(str){
+    function hexToBytes(str){
         var filteredStr = str.toLowerCase().replace(/[^0-9a-f]/g, '');
         if(filteredStr.length % 2 == 1)
             filteredStr = '0' + filteredStr;
@@ -399,12 +476,15 @@
     }
 
     function bytesToIntStr(bytes){
-        return new BigInteger(hexEncode(bytes),16).toString(10);
+        return new BigInteger(bytesToHex(bytes),16).toString(10);
     }
 
     function intStrToBytes(intStr){
-        return hexDecode(new BigInteger(intStr, 10).toString(16));
+        return hexToBytes(new BigInteger(intStr, 10).toString(16));
     }
+
+    function bytesToDecList(bytes){ return join(bytes, ' '); }
+    function decListToBytes(decList){ return /[0-9]+/g.matches(decList).map(function(x){ return parseInt(x); }); }
 
     var urldecode = decodeURIComponent;
     var urlencode = encodeURIComponent;
@@ -431,12 +511,12 @@
         return (num >>> 24) | ((num >>> 8) & 0xff00) | ((num & 0xff00) << 8) | (num << 24);
     }
 
-    function lengthExtensionAttack(hashInfo, data, origSignHex, secretLen, appendText) {
+    function lengthExtensionAttack(hashInfo, data, origSign, secretLen, appendText) {
         // create hash
         var hashAlgo = hashInfo.algo.create();
 
         // restore state
-        var origSignWords = CryptoJS.enc.Latin1.parse(bytesToStr(hexDecode(origSignHex))).words;
+        var origSignWords = CryptoJS.enc.Latin1.parse(origSign).words;
 
         if(hashInfo.littleEndian)
             for(var i = 0; i < origSignWords.length; i++)
@@ -458,16 +538,16 @@
         hashAlgo._nDataBytes += fullByteSize;
 
         // calculate new signature
-        var newSignatureHex = CryptoJS.enc.Hex.stringify(hashAlgo.finalize());
+        var newSignature = CryptoJS.enc.Latin1.stringify(hashAlgo.finalize());
 
         var bitLen = (data.length + secretLen) * 8;
         var bitLenStr = bytesToStr(new Array(0, 0, 0, 0, bitLen >>> 24, bitLen >>> 16 & 0xff, bitLen >>> 8 & 0xff, bitLen & 0xff));
         if(hashInfo.littleEndian)
             bitLenStr = reverse(bitLenStr);
 
-        var newDataHex = hexEncode(strToBytes(data + '\x80' + '\x00'.repeat(paddingLen - 1 + (hashInfo.bitLenSize - 8)) + bitLenStr + appendText));
+        var newData = data + '\x80' + '\x00'.repeat(paddingLen - 1 + (hashInfo.bitLenSize - 8)) + bitLenStr + appendText;
 
-        return { newDataHex: newDataHex, newSignatureHex: newSignatureHex };
+        return { newData: newData, newSignature: newSignature };
     }
 
     var lastStr = '', lastBytes = Array(), lastExcept;
@@ -567,9 +647,9 @@
                 history.replaceState(null, null, '#conv/' + urlencode(str));
 
             if(showGeneral.hasClass('active')){
-                if(except != inpDec) inpDec.val(join(bytes, ' '));
-                if(except != inpHex) inpHex.val(hexEncode(bytes, ' '));
-                if(except != inpBase64) inpBase64.val(base64encode(bytes));
+                if(except != inpDec) inpDec.val(bytesToDecList(bytes));
+                if(except != inpHex) inpHex.val(bytesToHex(bytes, ' '));
+                if(except != inpBase64) inpBase64.val(bytesToBase64(bytes));
                 if(except != inpUrlEnc) inpUrlEnc.val(urlencode(str));
                 if(except != inpHtmlEnc) inpHtmlEnc.val(htmlEncode(str));
                 if(except != inpBinary) inpBinary.val(bytesToBinary(bytes));
@@ -635,9 +715,9 @@
         }
 
         convInputByteHandle(inpAscii, strToBytes);
-        convInputByteHandle(inpDec, function(x){ return /[0-9]+/g.matches(x).map(function(x){ return parseInt(x); }); });
-        convInputByteHandle(inpHex, hexDecode);
-        convInputByteHandle(inpBase64, base64decode);
+        convInputByteHandle(inpDec, decListToBytes);
+        convInputByteHandle(inpHex, hexToBytes);
+        convInputByteHandle(inpBase64, base64ToBytes);
         convInputByteHandle(inpUrlEnc, urldecode);
         convInputByteHandle(inpHtmlEnc, htmlDecode);
         convInputByteHandle(inpBinary, binaryToBytes);
@@ -647,27 +727,106 @@
         for(var i = 1; i <= 25; i++)
             convInputByteHandle(inpRots[i], function(i){ return function(str){ return rot(str, -i); }; }(i));
 
+        function detectFormat(text){
+            var onlyDigits = !!/^[0-9]+$/.exec(text);
+            var onlyHex = !!/^[0-9a-fA-F ]+$/.exec(text);
+            var onlyB64 = !!/^[0-9a-zA-Z+=/]+$/.exec(text);
+//            var hasLowerAlpha = !!/[a-z]/.exec(text);
+//            var hasUpperAlpha = !!/[A-Z]/.exec(text);
+            var hasB64specChar = !!/[/+=]/.exec(text);
+            var containsSpace = !!/ /.exec(text);
+
+            var format = 'ascii';
+            if(onlyDigits && containsSpace)
+                format = 'dec';
+            else if(onlyHex)
+                format = 'hex';
+            else if(onlyB64 && !containsSpace && hasB64specChar){
+                try { atob(text); format = 'b64'; } catch(e) { }
+            }
+
+            console.log('detectFormat', format, { text: text, onlyDigits: onlyDigits, onlyHex: onlyHex, onlyB64: onlyB64, containsSpace: containsSpace });
+
+            return format;
+        }
+
+        function formatInputGet(input){
+            var component = input.closest('.formatSelector');
+            var format = component.find('.selVal').text();
+            var formattedValue = input.val();
+
+            var isAutoFormat = format == 'auto';
+            if(isAutoFormat)
+                format = detectFormat(formattedValue);
+
+            var inputLabel = component.find('.inputLabel');
+            inputLabel.css('display', isAutoFormat ? 'block' : 'none');
+            inputLabel.text(format.toUpperCase());
+            inputLabel.toggleClass('label-primary', format == 'ascii');
+            inputLabel.toggleClass('label-danger', format == 'hex');
+            inputLabel.toggleClass('label-success', format == 'b64');
+            inputLabel.toggleClass('label-info', format == 'dec');
+
+            var plainValue;
+            if(format == 'hex')
+                plainValue = bytesToStr(hexToBytes(formattedValue));
+            else if(format == 'b64')
+                plainValue = base64ToStr(formattedValue);
+            else if(format == 'dec')
+                plainValue = bytesToStr(decListToBytes(formattedValue));
+            else if(format == 'int')
+                plainValue = bytesToStr(intStrToBytes(formattedValue));
+            else
+                plainValue = formattedValue;
+
+            return plainValue;
+        }
+
+        function formatInputSet(input, newValue){
+            var format = input.closest('.formatSelector').find('.selVal').text();
+
+            var formattedValue;
+            if(format == 'hex')
+                formattedValue = bytesToHex(strToBytes(newValue));
+            else if(format == 'b64')
+                formattedValue = strToBase64(newValue);
+            else if(format == 'dec')
+                formattedValue = bytesToDecList(strToBytes(newValue));
+            else
+                formattedValue = newValue;
+
+            input.val(formattedValue);
+        }
+
         function refreshHash(){
-            var origData = inpHashOrigData.val();
-            var origSign = inpHashOrigSign.val();
+            var origData = formatInputGet(inpHashOrigData);
+            var origSign = formatInputGet(inpHashOrigSign);
             var secretLen = parseInt(inpHashSecretLen.val());
-            var appendData = inpHashAppendData.val();
+            var appendData = formatInputGet(inpHashAppendData);
 
             var hashInfoName =
-                origSign.length == hashInfos.md5.hashLen * 2 ? 'md5' :
-                origSign.length == hashInfos.sha1.hashLen * 2 ? 'sha1' :
-                origSign.length == hashInfos.sha256.hashLen * 2 ? 'sha256' :
-                origSign.length == hashInfos.sha512.hashLen * 2 ? 'sha512' : null;
+                origSign.length == hashInfos.md5.hashLen ? 'md5' :
+                origSign.length == hashInfos.sha1.hashLen ? 'sha1' :
+                origSign.length == hashInfos.sha256.hashLen ? 'sha256' :
+                origSign.length == hashInfos.sha512.hashLen ? 'sha512' : null;
 
             txtHashAlgorithm.text(hashInfoName ? hashInfoName.toUpperCase() : "Could not detect hash type!");
 
-            var result = hashInfoName ? lengthExtensionAttack(hashInfos[hashInfoName], origData, origSign, secretLen, appendData) : { newSignatureHex: "", newDataHex: "" };
+            var result = hashInfoName ? lengthExtensionAttack(hashInfos[hashInfoName], origData, origSign, secretLen, appendData) : { newSignature: "", newData: "" };
 
-            inpHashNewSignature.val(result.newSignatureHex);
-            inpHashNewData.val(result.newDataHex);
+            formatInputSet(inpHashNewSignature, result.newSignature);
+            formatInputSet(inpHashNewData, result.newData);
         }
 
         new Array(inpHashOrigData, inpHashOrigSign, inpHashSecretLen, inpHashAppendData).forEach(function(x){ keyEventSignup(x, refreshHash); });
+
+        $('.formatSelector a').click(function(e){
+            var a = $(e.target);
+            a.closest('.formatSelector').find('.selVal').text(a.text());
+            refreshHash();
+        });
+
+        refreshHash();
 //        console.log('lengthExtensionAttack MD5', lengthExtensionAttack(hashInfos.md5, 'hello', '11e2d168019acd14ecdb5ec80a98bb38', 6, 'bello'));
 //        console.log('lengthExtensionAttack SHA1', lengthExtensionAttack(hashInfos.sha1, 'hello', 'a590ccecb687967079362e49b7fe6c5258d09be5', 6, 'bello'));
 //        console.log('lengthExtensionAttack SHA256', lengthExtensionAttack(hashInfos.sha256, 'hello', '1d4d234df92246e120bc62a10d8751882494a8a9bae09c494a519a783a128732', 6, 'bello'));
