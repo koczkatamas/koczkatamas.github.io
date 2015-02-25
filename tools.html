@@ -40,9 +40,16 @@
         .formatSelector input { margin: 1px 0; }
         .formatSelector .open .dropdown-menu { border-radius: 0 0 4px 4px; }
         .formatSelector .open .dropdown-toggle { border-radius: 4px 0 0 0; }
+
+        * { margin: 0; }
+        html, body { height: 100%; }
+        .wrapper { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -50px; }
+        footer, .push { height: 50px; line-height: 38px; text-align: right }
     </style>
 </head>
 <body>
+
+<div class="wrapper">
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -59,6 +66,7 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="tools.html">Tools</a></li>
                 <li><a href="blog/">Blog</a></li>
+                <li><a href="https://twitter.com/koczkatamas">Twitter</a></li>
             </ul>
         </div><!--/.nav-collapse -->
     </div>
@@ -288,6 +296,15 @@
     </div>
 
 </div>
+
+<div class="push"></div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Tamás Koczka | <a href="https://github.com/koczkatamas/koczkatamas.github.io" target="_blank">source</a></p>
+    </div>
+</footer>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
