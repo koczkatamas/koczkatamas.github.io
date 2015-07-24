@@ -107,6 +107,10 @@
                     <span class="label label-success inputLabel">B64</span>
                 </p>
                 <p>
+                    <textarea id="inpBase32" placeholder="Base32" class="form-control dataInput"></textarea>
+                    <span class="label label-success inputLabel">B32</span>
+                </p>
+                <p>
                     <textarea id="inpUrlEnc" placeholder="URL-encoded" class="form-control dataInput"></textarea>
                     <span class="label label-warning inputLabel">URL</span>
                 </p>
@@ -361,6 +365,59 @@
     function base64ToStr(base64str){ return atob(base64str); }
     function base64ToBytes(str){ return strToBytes(base64ToStr(str)); }
 
+    function base32ToStr(base32str){ return bytesToStr(base32ToBytes(base32str)); }
+    function base32ToBytes(str){
+        str = str.replace(/[\s=]+/g, '');
+
+        var bitCount = 0, bitData = 0, bytes = [];
+        for (var i = 0; i < str.length; i++) {
+            putBits(5, _base32CharcodeToInt(str.charCodeAt(i)));
+        }
+        return bytes;
+
+        function putBits(cnt, data) {
+            bitData = (bitData << cnt) | data;
+            bitCount += cnt;
+            while (bitCount >= 8) {
+                bitCount -= 8;
+                bytes.push((bitData >> bitCount) & 0xff);
+            }
+        }
+    }
+
+    function strToBase32(bytes){ return bytesToBase32(strToBytes(bytes)); }
+    function bytesToBase32(bytes) {
+        var result = '';
+        var bitData = 0, bitCount = 0;
+        for (var i = 0; i < bytes.length; i++) {
+            putBits(8, bytes[i]);
+        }
+        if (bitCount > 0) putBits(5, 0);
+        while (result.length % 8 > 0) result += '=';
+        return result;
+
+        function putBits(cnt, data) {
+            bitData = (bitData << cnt) | data;
+            bitCount += cnt;
+            while (bitCount >= 5) {
+                bitCount -= 5;
+                result += String.fromCharCode(_base32IntToCharcode((bitData >> bitCount) & 0x1f));
+            }
+        }
+    }
+
+    function _base32CharcodeToInt(chCode) {
+        if (chCode >= 65 && chCode <= 90) return chCode - 65;        // A-Z -> 0-25
+        if (chCode >= 97 && chCode <= 122) return chCode - 97;       // a-z -> 0-25
+        if (chCode >= 50 && chCode <= 55) return chCode - 50 + 26;   // 2-7 -> 26-31
+        throw new Error('Base32 invalid charcode')
+    }
+    function _base32IntToCharcode(i) {
+        if (i >= 0 && i <= 25) return i + 65;
+        if (i >= 26 && i <= 31) return i - 26 + 50;
+        throw new Error('Base32 invalid int')
+    }
+
     function bytesToHex(bytes, separator){
         separator = separator || '';
         return bytes.map(function(x){ return padLeft(x.toString(16),'00'); }).join(separator);
@@ -590,7 +647,7 @@
                 <span class="label label-'+(i==13 ? 'danger' : 'primary')+' inputLabel">ROT'+i+'</span>\
             </p>');
 
-        var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpUrlEnc = $('#inpUrlEnc'),
+        var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase32 = $('#inpBase32'), inpUrlEnc = $('#inpUrlEnc'),
             inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
             md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
             showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc'),
@@ -670,6 +727,7 @@
                 if(except != inpDec) inpDec.val(bytesToDecList(bytes));
                 if(except != inpHex) inpHex.val(bytesToHex(bytes, ' '));
                 if(except != inpBase64) inpBase64.val(bytesToBase64(bytes));
+                if(except != inpBase32) inpBase32.val(bytesToBase32(bytes));
                 if(except != inpUrlEnc) inpUrlEnc.val(urlencode(str));
                 if(except != inpHtmlEnc) inpHtmlEnc.val(htmlEncode(str));
                 if(except != inpBinary) inpBinary.val(bytesToBinary(bytes));
@@ -715,7 +773,7 @@
             while(match = this.exec(str))
                 matches.push(match[0]);
             return matches;
-        }
+        };
 
         function inputByteHandle(input, toByteConv, funcToCall){
             keyEventSignup(input, function(){
@@ -738,6 +796,7 @@
         convInputByteHandle(inpDec, decListToBytes);
         convInputByteHandle(inpHex, hexToBytes);
         convInputByteHandle(inpBase64, base64ToBytes);
+        convInputByteHandle(inpBase32, base32ToBytes);
         convInputByteHandle(inpUrlEnc, urldecode);
         convInputByteHandle(inpHtmlEnc, htmlDecode);
         convInputByteHandle(inpBinary, binaryToBytes);
