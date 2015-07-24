@@ -523,6 +523,8 @@ $(function(){
       plainValue = bytesToStr(hexToBytes(formattedValue));
     else if(format == 'b64')
       plainValue = base64ToStr(formattedValue);
+    else if(format == 'b32')
+      plainValue = base32ToStr(formattedValue);
     else if(format == 'dec')
       plainValue = bytesToStr(decListToBytes(formattedValue));
     else if(format == 'int')
@@ -541,6 +543,8 @@ $(function(){
       formattedValue = bytesToHex(strToBytes(newValue));
     else if(format == 'b64')
       formattedValue = strToBase64(newValue);
+    else if(format == 'b32')
+      formattedValue = strToBase32(newValue);
     else if(format == 'dec')
       formattedValue = bytesToDecList(strToBytes(newValue));
     else
