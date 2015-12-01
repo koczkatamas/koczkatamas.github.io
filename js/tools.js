@@ -319,6 +319,19 @@ try {
     $('#tabRSA').tab('show');
 } catch(err){ }
 
+function readBlob(blob){
+    return new Promise(function(resolve, reject){
+        var reader = new FileReader();
+        reader.onload = function() {
+            resolve(reader.result);
+        };
+        reader.onerror = function(e) {
+            reject(e);
+        };
+        reader.readAsBinaryString(blob);
+    });
+}
+
 $(function(){
   for(var i = 1; i <= 25; i++)
     $('#rotArea').append('<p>\
@@ -341,7 +354,7 @@ $(function(){
   for(var i = 1; i <= 25; i++)
     inpRots[i] = $('#rot' + i);
 
-  $('#download').click(function(){
+  $('#btnDownload').click(function(){
     var a = document.createElement("a");
     document.body.appendChild(a);
     a.style = "display:none";
@@ -351,6 +364,14 @@ $(function(){
     a.download = 'data.txt';
     a.click();
     window.URL.revokeObjectURL(url);
+  });
+  
+  var fileInput = $('#fileInput');
+  
+  $('#btnUpload').click(function(){ fileInput.click(); });
+  
+  fileInput.on('change', function(){
+      readBlob(fileInput.get(0).files[0]).then(function(fileContent){ convRefreshAll(fileContent); });
   });
 
   $('#btnReverse').click(function(){

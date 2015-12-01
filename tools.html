@@ -87,8 +87,10 @@
                 <label id="showRot" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#rotArea"><input type="checkbox" autocomplete="off" checked>ROT</label>
                 <span style="float:left; margin:5px 0 0 10px">Length: <span id="dataLength">0</span></span>
             </div>
-            <button id="download" class="btn btn-success btn3d btn-sm pull-right">Download</button>
+            <button id="btnDownload" class="btn btn-success btn3d btn-sm pull-right">Download</button>
+            <button id="btnUpload" class="btn btn-primary btn3d btn-sm pull-right" style="margin-right:10px">Upload</button>            
             <button id="btnReverse" class="btn btn-default btn3d btn-sm pull-right" style="margin-right:10px">Reverse</button>
+            <input type="file" id="fileInput" style="display:none"/>
             <p>
                 <textarea id="inpAscii" placeholder="ASCII" class="form-control dataInput"></textarea>
                 <span class="label label-primary inputLabel">ASCII</span>
