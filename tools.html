@@ -46,6 +46,7 @@
         html, body { height: 100%; }
         .wrapper { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -50px; }
         footer, .push { height: 50px; line-height: 38px; text-align: right }
+        .form-control[readonly] { cursor: unset };
     </style>
 </head>
 <body>
@@ -177,11 +178,11 @@
                     <span class="label label-success inputLabel">MRZ</span>
                 </p>
                 <p>
-                    <input type="text" id="lUppercase" placeholder="Upper case" class="form-control dataInput" readonly />
+                    <textarea type="text" id="lUppercase" placeholder="Upper case" class="form-control dataInput" readonly></textarea>
                     <span class="label label-danger inputLabel">UPP</span>
                 </p>
                 <p>
-                    <input type="text" id="lLowercase" placeholder="Lower case" class="form-control dataInput" readonly />
+                    <textarea type="text" id="lLowercase" placeholder="Lower case" class="form-control dataInput" readonly></textarea>
                     <span class="label label-primary inputLabel">LOW</span>
                 </p>
             </div>
