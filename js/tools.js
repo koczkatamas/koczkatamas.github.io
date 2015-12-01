@@ -328,7 +328,7 @@ $(function(){
 
   var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase32 = $('#inpBase32'), inpUrlEnc = $('#inpUrlEnc'),
     inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
-    md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'),
+    md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'), dataLength = $('#dataLength'),
     showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc'),
     inpHashOrigData = $('#hashOrigData'), inpHashOrigSign = $('#hashOrigSign'), inpHashSecretLen = $('#hashSecretLen'),
     inpHashAppendData = $('#hashAppendData'), inpHashNewData = $('#hashNewData'), inpHashNewSignature = $('#hashNewSignature'),
@@ -398,6 +398,8 @@ $(function(){
     lastBytes = bytes;
     lastExcept = except;
 
+    dataLength.text(str.length);
+
     if(except != inpAscii) inpAscii.val(str);
 
     if(!historyDisabled && history.replaceState && $("#tabAscii").parent().hasClass('active'))
@@ -443,7 +445,7 @@ $(function(){
       sha512.val(CryptoJS.SHA512(wordArray));
       sha3.val(CryptoJS.SHA3(wordArray));
     }
-
+    
     //console.log('refreshAll: ' + (new Date().getTime() - start) + 'ms -> ' + str);
   }
 
