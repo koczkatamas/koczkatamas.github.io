@@ -329,6 +329,7 @@ $(function(){
   var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase32 = $('#inpBase32'), inpUrlEnc = $('#inpUrlEnc'),
     inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
     md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'), dataLength = $('#dataLength'),
+    lLowercase = $('#lLowercase'), lUppercase = $('#lUppercase'),
     showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc'),
     inpHashOrigData = $('#hashOrigData'), inpHashOrigSign = $('#hashOrigSign'), inpHashSecretLen = $('#hashSecretLen'),
     inpHashAppendData = $('#hashAppendData'), inpHashNewData = $('#hashNewData'), inpHashNewSignature = $('#hashNewSignature'),
@@ -428,6 +429,8 @@ $(function(){
     if(showMisc.hasClass('active')) {
       if (except != inpReverse) inpReverse.val(reverse(str));
       if (except != inpMorse) inpMorse.val(morseEncode(str));
+      lLowercase.val(str.toLowerCase());
+      lUppercase.val(str.toUpperCase());
       morseStyle();
     }
 
