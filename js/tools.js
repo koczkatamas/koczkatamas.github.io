@@ -383,6 +383,7 @@ $(function(){
     $(showButtons[i].attr('data-target')).toggleClass('in', isActive).toggleClass('collapse', !isActive);
   }
 
+  var historyDisabled = false;
   function convRefreshAll(bytesOrStr, except, force){
     //var start = new Date().getTime();
 
@@ -399,8 +400,17 @@ $(function(){
 
     if(except != inpAscii) inpAscii.val(str);
 
-    if(history.replaceState && $("#tabAscii").parent().hasClass('active'))
-      history.replaceState(null, null, '#conv/' + urlencode(str));
+    if(!historyDisabled && history.replaceState && $("#tabAscii").parent().hasClass('active'))
+    {
+        try
+        {
+            history.replaceState(null, null, '#conv/' + urlencode(str)); 
+        } catch(e)
+        {
+            console.log('history.replaceState failed: ' + e);
+            historyDisabled = true;
+        }
+    }
 
     if(showGeneral.hasClass('active')){
       if(except != inpDec) inpDec.val(bytesToDecList(bytes));
