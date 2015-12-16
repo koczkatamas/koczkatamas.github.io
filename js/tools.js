@@ -33,7 +33,7 @@ function join(array, separator){
 function strToBase64(bytes){ return btoa(bytes); }
 function bytesToBase64(bytes){ return strToBase64(bytesToStr(bytes)); }
 
-function base64ToStr(base64str){ return atob(base64str); }
+function base64ToStr(base64str){ return atob(base64str.replace(/-/g, '+').replace(/_/g, '/')); }
 function base64ToBytes(str){ return strToBytes(base64ToStr(str)); }
 
 function base32ToStr(base32str){ return bytesToStr(base32ToBytes(base32str)); }
