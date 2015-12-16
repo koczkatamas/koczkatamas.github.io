@@ -341,7 +341,7 @@ $(function(){
 
   var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase32 = $('#inpBase32'), inpUrlEnc = $('#inpUrlEnc'),
     inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
-    md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'), dataLength = $('#dataLength'),
+    md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'), dataLength = $('#dataLength'), dataLengthBits = $('#dataLengthBits'),
     lLowercase = $('#lLowercase'), lUppercase = $('#lUppercase'),
     showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc'),
     inpHashOrigData = $('#hashOrigData'), inpHashOrigSign = $('#hashOrigSign'), inpHashSecretLen = $('#hashSecretLen'),
@@ -450,6 +450,7 @@ $(function(){
     lastExcept = except;
 
     dataLength.text(str.length);
+    dataLengthBits.text(str.length * 8);
 
     if(except != inpAscii) inpAscii.val(str);
 
