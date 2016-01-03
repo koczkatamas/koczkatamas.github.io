@@ -111,7 +111,7 @@ $(function(){
        var ssid = inpUpcSsid.val().replace('UPC', '').trim();
 
        var tableBody = "";
-       if(ssid.length <= 7)
+       if(ssid.length > 0 && ssid.length <= 7)
        {
            var serials = upcPredictSerials(parseInt(ssid));
            serials = serials.sort(function(a,b){ return a-b; });
