@@ -317,6 +317,8 @@ try {
     $('#tabHash').tab('show');
   else if(pageName == 'rsa')
     $('#tabRSA').tab('show');
+  else if(pageName == 'upc')
+    $('#tabUPC').tab('show');
 } catch(err){ }
 
 function readBlob(blob){
@@ -330,6 +332,11 @@ function readBlob(blob){
         };
         reader.readAsBinaryString(blob);
     });
+}
+
+function keyEventSignup(item, func){
+    item.keypress(func);
+    item.keyup(func);
 }
 
 $(function(){
@@ -385,6 +392,8 @@ $(function(){
       refreshHash();
     else if(e.target.id == 'tabRSA')
       window.location.hash = "rsa";
+    else if(e.target.id == 'tabUPC')
+      window.location.hash = "upc";
   });
   
   var dragLeaveClear;
@@ -506,11 +515,6 @@ $(function(){
   function convRefreshToLast(){ convRefreshAll(lastStr, lastExcept, true); }
 
   convRefreshToLast();
-
-  function keyEventSignup(item, func){
-    item.keypress(func);
-    item.keyup(func);
-  }
 
   RegExp.prototype.matches = function(str){
     var matches = [];
