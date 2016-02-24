@@ -109,6 +109,20 @@ function hexToBytes(str){
   return bytes;
 }
 
+function bytesToOct(bytes, separator){
+  separator = separator || '';
+  return bytes.map(function(x){ return padLeft(x.toString(8),'000'); }).join(separator);
+}
+
+function octToBytes(str){
+  var filteredStr = str.replace(/[^0-7]/g, '');
+
+  var bytes = [];
+  for(var i = 0; i < filteredStr.length; i += 3)
+    bytes.push(parseInt(filteredStr.substr(i, 3), 8));
+  return bytes;
+}
+
 function bytesToBinary(bytes){
   return join(bytes.map(function(x){ return padLeft(x.toString(2),'00000000'); }), ' ');
 }
@@ -194,7 +208,27 @@ var morseTable = {
   6: '-....',
   7: '--...',
   8: '---..',
-  9: '----.'
+  9: '----.',
+  '.': '.-.-.-',
+  '?': '..--..',
+  '\'': '.----.',
+  '"': '.-..-.',
+  '/': '-..-.',
+  '@': '.--.-.',
+  '=': '-.. .-',
+  '$': '...-..-',
+  '!': '---.',
+  '?': '.-..-.',
+  '(': '-.--.-',
+  ')': '-.--.-',
+  '[': '-.--.',
+  ']': '-.--.-',
+  '+': '.-.-.',
+  '-': '-....-',
+  '_': '..--.-',
+  ':': '---...',
+  ';': '-.-.-.',
+  '\n': '.-.-'
 };
 var morseTableRev = Array();
 for(var morseKey in morseTable)
@@ -346,8 +380,8 @@ $(function(){
                 <span class="label label-'+(i==13 ? 'danger' : 'primary')+' inputLabel">ROT'+i+'</span>\
             </p>');
 
-  var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase32 = $('#inpBase32'), inpUrlEnc = $('#inpUrlEnc'),
-    inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
+  var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpOct = $('#inpOct'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase32 = $('#inpBase32'),
+    inpUrlEnc = $('#inpUrlEnc'), inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
     md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'), dataLength = $('#dataLength'), dataLengthBits = $('#dataLengthBits'),
     lLowercase = $('#lLowercase'), lUppercase = $('#lUppercase'),
     showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc'),
@@ -478,6 +512,7 @@ $(function(){
     if(showGeneral.hasClass('active')){
       if(except != inpDec) inpDec.val(bytesToDecList(bytes));
       if(except != inpHex) inpHex.val(bytesToHex(bytes, ' '));
+      if(except != inpOct) inpOct.val(bytesToOct(bytes, ' '));
       if(except != inpBase64) inpBase64.val(bytesToBase64(bytes));
       if(except != inpBase32) inpBase32.val(bytesToBase32(bytes));
       if(except != inpUrlEnc) inpUrlEnc.val(urlencode(str));
@@ -544,6 +579,7 @@ $(function(){
   convInputByteHandle(inpAscii, strToBytes);
   convInputByteHandle(inpDec, decListToBytes);
   convInputByteHandle(inpHex, hexToBytes);
+  convInputByteHandle(inpOct, octToBytes);
   convInputByteHandle(inpBase64, base64ToBytes);
   convInputByteHandle(inpBase32, base32ToBytes);
   convInputByteHandle(inpUrlEnc, urldecode);
