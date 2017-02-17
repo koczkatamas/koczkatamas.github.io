@@ -31,7 +31,7 @@ function join(array, separator){
 }
 
 function strToBase64(bytes){ return btoa(bytes); }
-function bytesToBase64(bytes){ return strToBase64(bytesToStr(bytes)); }
+function bytesToBase64(bytes, url){ var res = strToBase64(bytesToStr(bytes)); if(url) res = res.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''); return res; }
 
 function base64ToStr(base64str){ return atob(base64str.replace(/-/g, '+').replace(/_/g, '/')); }
 function base64ToBytes(str){ return strToBytes(base64ToStr(str)); }
@@ -380,7 +380,7 @@ $(function(){
                 <span class="label label-'+(i==13 ? 'danger' : 'primary')+' inputLabel">ROT'+i+'</span>\
             </p>');
 
-  var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpOct = $('#inpOct'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase32 = $('#inpBase32'),
+  var inpAscii = $('#inpAscii'), inpHex = $('#inpHex'), inpOct = $('#inpOct'), inpDec = $('#inpDec'), inpBase64 = $('#inpBase64'), inpBase64Url = $('#inpBase64Url'), inpBase32 = $('#inpBase32'),
     inpUrlEnc = $('#inpUrlEnc'), inpHtmlEnc = $('#inpHtmlEnc'), inpBinary = $('#inpBinary'), inpReverse = $('#inpReverse'), inpMorse = $('#inpMorse'), inpInteger = $('#inpInteger'),
     md5 = $('#md5'), ripemd160 = $('#ripemd160'), sha1 = $('#sha1'), sha256 = $('#sha256'), sha512 = $('#sha512'), sha3 = $('#sha3'), dataLength = $('#dataLength'), dataLengthBits = $('#dataLengthBits'),
     lLowercase = $('#lLowercase'), lUppercase = $('#lUppercase'),
@@ -513,7 +513,8 @@ $(function(){
       if(except != inpDec) inpDec.val(bytesToDecList(bytes));
       if(except != inpHex) inpHex.val(bytesToHex(bytes, ' '));
       if(except != inpOct) inpOct.val(bytesToOct(bytes, ' '));
-      if(except != inpBase64) inpBase64.val(bytesToBase64(bytes));
+      if(except != inpBase64) inpBase64.val(bytesToBase64(bytes, false));
+      if(except != inpBase64Url) inpBase64Url.val(bytesToBase64(bytes, true));
       if(except != inpBase32) inpBase32.val(bytesToBase32(bytes));
       if(except != inpUrlEnc) inpUrlEnc.val(urlencode(str));
       if(except != inpHtmlEnc) inpHtmlEnc.val(htmlEncode(str));
@@ -581,6 +582,7 @@ $(function(){
   convInputByteHandle(inpHex, hexToBytes);
   convInputByteHandle(inpOct, octToBytes);
   convInputByteHandle(inpBase64, base64ToBytes);
+  convInputByteHandle(inpBase64Url, base64ToBytes);
   convInputByteHandle(inpBase32, base32ToBytes);
   convInputByteHandle(inpUrlEnc, urldecode);
   convInputByteHandle(inpHtmlEnc, htmlDecode);
