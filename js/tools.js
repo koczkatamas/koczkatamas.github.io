@@ -373,6 +373,35 @@ function keyEventSignup(item, func){
     item.keyup(func);
 }
 
+var makeCRCTable = function(){
+    var c;
+    var crcTable = [];
+    for(var n =0; n < 256; n++){
+        c = n;
+        for(var k =0; k < 8; k++){
+            c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+        }
+        crcTable[n] = c;
+    }
+    return crcTable;
+}
+
+var crc32 = function(str) {
+  var crcTable = window.crcTable || (window.crcTable = makeCRCTable());
+  var crc = 0 ^ (-1);
+
+  for (var i = 0; i < str.length; i++ ) {
+    crc = (crc >>> 8) ^ crcTable[(crc ^ str.charCodeAt(i)) & 0xFF];
+  }
+
+  var val = (crc ^ (-1)) >>> 0;
+  var x = val.toString(16);
+  while (x.length < 8) {
+    x = "0" + x;
+  }
+  return x;
+};
+
 $(function(){
   for(var i = 1; i <= 25; i++)
     $('#rotArea').append('<p>\
@@ -387,7 +416,7 @@ $(function(){
     showRot = $('#showRot'), showHash = $('#showHash'), showGeneral = $('#showGeneral'), showMisc = $('#showMisc'),
     inpHashOrigData = $('#hashOrigData'), inpHashOrigSign = $('#hashOrigSign'), inpHashSecretLen = $('#hashSecretLen'),
     inpHashAppendData = $('#hashAppendData'), inpHashNewData = $('#hashNewData'), inpHashNewSignature = $('#hashNewSignature'),
-    txtHashAlgorithm = $('#txtHashAlgorithm');
+    txtHashAlgorithm = $('#txtHashAlgorithm'), crc32x = $('#crc32');
 
   var showButtons = Array(showRot, showHash, showGeneral, showMisc);
 
@@ -543,6 +572,7 @@ $(function(){
       sha256.val(CryptoJS.SHA256(wordArray));
       sha512.val(CryptoJS.SHA512(wordArray));
       sha3.val(CryptoJS.SHA3(wordArray));
+      crc32x.val(crc32(str).toString(16));
     }
     
     //console.log('refreshAll: ' + (new Date().getTime() - start) + 'ms -> ' + str);
